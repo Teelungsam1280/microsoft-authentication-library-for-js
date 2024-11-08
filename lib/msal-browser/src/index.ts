@@ -18,6 +18,7 @@ export {
 } from "./app/PublicClientApplication.js";
 export { PublicClientNext } from "./app/PublicClientNext.js";
 export { IController } from "./controllers/IController.js";
+export { StandardController } from "./controllers/StandardController.js";
 export {
     Configuration,
     BrowserAuthOptions,
@@ -67,6 +68,12 @@ export { AuthorizationCodeRequest } from "./request/AuthorizationCodeRequest.js"
 export { AuthenticationResult } from "./response/AuthenticationResult.js";
 export { ClearCacheRequest } from "./request/ClearCacheRequest.js";
 export { InitializeApplicationRequest } from "./request/InitializeApplicationRequest.js";
+
+// Network
+export { FetchClient } from "./network/FetchClient.js";
+
+// Operating Context
+export { BaseOperatingContext } from "./operatingcontext/BaseOperatingContext.js";
 
 // Cache
 export { LoadTokenOptions } from "./cache/TokenCache.js";
@@ -155,6 +162,8 @@ export {
     TenantProfile,
     IPerformanceClient,
     StubPerformanceClient,
+    TokenClaims,
+    Constants,
 } from "@azure/msal-common/browser";
 
 export { version } from "./packageMetadata.js";
