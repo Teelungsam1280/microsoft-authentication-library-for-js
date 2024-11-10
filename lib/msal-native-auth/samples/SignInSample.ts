@@ -6,13 +6,18 @@
 import {
     SignInCodeRequiredHandler,
     SignInPasswordRequiredHandler,
-} from "./auth_flow/handler/SignInHandler.js";
-import { AccountManager } from "./auth_flow/manager/AccountManager.js";
-import { SignInOptions } from "./NativeAuthActionOptions.js";
-import { NativeAuthConfiguration } from "./NativeAuthConfiguration.js";
-import { NativeAuthPublicClientApplication } from "./NativeAuthPublicClientApplication.js";
+} from "@azure/msal-native-auth";
+import { AccountInfo } from "@azure/msal-native-auth";
+import { SignInOptions } from "@azure/msal-native-auth";
+import { NativeAuthConfiguration } from "@azure/msal-native-auth";
+import { NativeAuthPublicClientApplication } from "@azure/msal-native-auth";
 
-export async function signin(): Promise<void> {
+// This sample demonstrates how to sign in a user using the MSAL Native Auth library.
+// Currently, this sample doesn't work and only is used to demonstrate the usage of the library.
+export async function signin(
+    username: string,
+    password?: string
+): Promise<void> {
     const config: NativeAuthConfiguration = {
         auth: { clientId: "test-client-id" },
         nativeAuth: { challengeTypes: ["test-challenge-type"] },
@@ -21,14 +26,14 @@ export async function signin(): Promise<void> {
     const app = NativeAuthPublicClientApplication.create(config);
 
     const signInOptions: SignInOptions = {
-        username: "test-username",
-        correlationId: "test-correlation-id",
+        username: username,
+        password: password,
     };
 
     const result = await app.signIn(signInOptions);
 
     if (!result.isSuccess) {
-        // handle error
+        // check the errr type and handle error
 
         return;
     }
@@ -36,7 +41,7 @@ export async function signin(): Promise<void> {
     // Check if the flow is completed
     if (result.isFlowCompleted()) {
         // Get the account manager which can be used to get account information, tokens, and sign out.
-        const accountManager: AccountManager = result.result as AccountManager;
+        const accountManager: AccountInfo = result.result as AccountInfo;
 
         accountManager.getAccount();
         accountManager.getIdToken();
@@ -60,7 +65,7 @@ export async function signin(): Promise<void> {
         }
 
         // Get the account manager which can be used to get account information, tokens, and sign out.
-        const accountManager: AccountManager = result.result as AccountManager;
+        const accountManager: AccountInfo = result.result as AccountInfo;
 
         accountManager.getAccount();
         accountManager.getIdToken();
@@ -95,7 +100,7 @@ export async function signin(): Promise<void> {
         }
 
         // Get the account manager which can be used to get account information, tokens, and sign out.
-        const accountManager: AccountManager = result.result as AccountManager;
+        const accountManager: AccountInfo = result.result as AccountInfo;
 
         accountManager.getAccount();
         accountManager.getIdToken();
@@ -119,7 +124,7 @@ export async function signin(): Promise<void> {
         }
 
         // Get the account manager which can be used to get account information, tokens, and sign out.
-        const accountManager: AccountManager = result.result as AccountManager;
+        const accountManager: AccountInfo = result.result as AccountInfo;
 
         accountManager.getAccount();
         accountManager.getIdToken();
@@ -129,3 +134,5 @@ export async function signin(): Promise<void> {
         return;
     }
 }
+
+console.log("Starting sign in sample...");

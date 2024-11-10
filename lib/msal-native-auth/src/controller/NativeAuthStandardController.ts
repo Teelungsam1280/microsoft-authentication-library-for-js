@@ -8,7 +8,7 @@ import {
     SignInCodeRequiredHandler,
     SignInPasswordRequiredHandler,
 } from "../auth_flow/handler/SignInHandler.js";
-import { AccountManager } from "../auth_flow/manager/AccountManager.js";
+import { AccountInfo } from "../auth_flow/data/AccountInfo.js";
 import { GetAccountResult } from "../auth_flow/result/GetAccountResult.js";
 import { ResetPasswordStartResult } from "../auth_flow/result/ResetPasswordResult.js";
 import { SignInResult } from "../auth_flow/result/SignInResult.js";
@@ -126,7 +126,7 @@ export class NativeAuthStandardController
                     signInSubmitPasswordParams
                 );
 
-                const accountManager = new AccountManager(
+                const accountManager = new AccountInfo(
                     completedResult.authenticationResult.account,
                     correlationId,
                     this.nativeAuthConfig

@@ -11,11 +11,15 @@ import {
     GetAccessTokenError,
     InvalidScopes,
 } from "../../error/GetAccessTokenError.js";
-import { AccountInfo, Constants, TokenClaims } from "@azure/msal-browser";
+import {
+    AccountInfo as AccountData,
+    Constants,
+    TokenClaims,
+} from "@azure/msal-browser";
 
-export class AccountManager {
+export class AccountInfo {
     constructor(
-        private readonly account: AccountInfo,
+        private readonly account: AccountData,
         private readonly correlationId: string,
         private readonly config: NativeAuthConfiguration
     ) {
@@ -36,7 +40,7 @@ export class AccountManager {
         throw new Error("Method not implemented.");
     }
 
-    getAccount(): AccountInfo {
+    getAccount(): AccountData {
         return this.account;
     }
 

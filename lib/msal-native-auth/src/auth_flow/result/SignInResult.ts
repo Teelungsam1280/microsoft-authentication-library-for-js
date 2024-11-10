@@ -7,15 +7,15 @@ import {
     SignInCodeRequiredHandler,
     SignInPasswordRequiredHandler,
 } from "../handler/SignInHandler.js";
-import { AccountManager } from "../manager/AccountManager.js";
+import { AccountInfo } from "../data/AccountInfo.js";
 import { ResultBase } from "./ResultBase.js";
 
 export class SignInResult extends ResultBase<
-    AccountManager,
+    AccountInfo,
     SignInCodeRequiredHandler | SignInPasswordRequiredHandler
 > {
     constructor(
-        result?: AccountManager,
+        result?: AccountInfo,
         handler?: SignInCodeRequiredHandler | SignInPasswordRequiredHandler
     ) {
         super();
@@ -24,14 +24,14 @@ export class SignInResult extends ResultBase<
     }
 }
 
-export class SignInSubmitCodeResult extends ResultBase<AccountManager> {
-    constructor(result?: AccountManager) {
+export class SignInSubmitCodeResult extends ResultBase<AccountInfo> {
+    constructor(result?: AccountInfo) {
         super();
         this.result = result;
     }
 }
 
-export class SignInSubmitPasswordResult extends ResultBase<AccountManager> {}
+export class SignInSubmitPasswordResult extends ResultBase<AccountInfo> {}
 
 export class SignInResendCodeResult extends ResultBase<
     void,

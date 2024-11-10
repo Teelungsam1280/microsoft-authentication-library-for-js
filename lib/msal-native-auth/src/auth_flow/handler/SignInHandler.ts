@@ -7,7 +7,7 @@ import { InvalidArgumentError } from "../../error/InvalidArgumentError.js";
 import { SignInSubmitCodeParams } from "../../interaction_client/parameter/SignInParams.js";
 import { SigninClient } from "../../interaction_client/SignInClient.js";
 import { NativeAuthConfiguration } from "../../NativeAuthConfiguration.js";
-import { AccountManager } from "../manager/AccountManager.js";
+import { AccountInfo } from "../data/AccountInfo.js";
 import {
     SignInResendCodeResult,
     SignInResult,
@@ -66,7 +66,7 @@ export class SignInCodeRequiredHandler extends SignInHandler {
                 submitCodeParams
             );
 
-            const accountManager = new AccountManager(
+            const accountManager = new AccountInfo(
                 completedResult.authenticationResult.account,
                 this.correlationId,
                 this.config
