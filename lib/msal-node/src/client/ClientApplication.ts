@@ -161,6 +161,7 @@ export abstract class ClientApplication {
         authCodePayLoad?: AuthorizationCodePayload
     ): Promise<AuthenticationResult> {
         this.logger.info("acquireTokenByCode called");
+        this.tokenCache.takeCacheSnapshots();
         if (request.state && authCodePayLoad) {
             this.logger.info("acquireTokenByCode - validating state");
             this.validateState(request.state, authCodePayLoad.state || "");
@@ -268,6 +269,7 @@ export abstract class ClientApplication {
     async acquireTokenSilent(
         request: SilentFlowRequest
     ): Promise<AuthenticationResult> {
+        this.tokenCache.takeCacheSnapshots();
         const validRequest: CommonSilentFlowRequest = {
             ...request,
             ...(await this.initializeBaseRequest(request)),

@@ -45,10 +45,25 @@ module.exports = function (cacheLocation) {
             }
         });
     };
+
+    const getPersistentCache = () => {
+        if (fs.existsSync(cacheLocation)) {
+            fs.readFile(cacheLocation, "utf-8", (err, data) => {
+                if (err) {
+                    throw err;
+                } else {
+                    return data;
+                }
+            });
+        } else {
+            return null;
+        }
+    };
     
     
     return {
         beforeCacheAccess,
-        afterCacheAccess
+        afterCacheAccess,
+        getPersistentCache
     }
 }

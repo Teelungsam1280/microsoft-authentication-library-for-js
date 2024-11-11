@@ -44,6 +44,8 @@ export class TokenCache implements ISerializableTokenCache, ITokenCache {
     private cacheSnapshot: string;
     private readonly persistence: ICachePlugin;
     private logger: Logger;
+    private inMemorySnapshot: string | null;
+    private persistentSnapshot: string | null;
 
     constructor(
         storage: NodeStorage,
@@ -114,6 +116,23 @@ export class TokenCache implements ISerializableTokenCache, ITokenCache {
      */
     getKVStore(): CacheKVStore {
         return this.storage.getCache();
+    }
+
+    takeCacheSnapshots(): void {
+        this.inMemorySnapshot = JSON.stringify(this.storage.getInMemoryCache());
+        //@ts-ignore
+        if(this.persistence && typeof this.persistence.getPersistentCache === 'function') {
+            //@ts-ignore
+            this.persistentSnapshot = JSON.stringify(this.persistence.getPersistentCache())
+        }
+    }
+
+    getInMemoryCacheSnapshot(): string | null {
+        return this.inMemorySnapshot;
+    }
+
+    getPersistentSnapshot(): string | null {
+        return this.persistentSnapshot;
     }
 
     /**
