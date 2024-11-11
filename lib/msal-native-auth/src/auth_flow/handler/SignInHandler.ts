@@ -16,7 +16,18 @@ import {
 } from "../result/SignInResult.js";
 import { HandlerBase } from "./HandlerBase.js";
 
+/*
+ * Base handler for sign-in operations.
+ */
 abstract class SignInHandler extends HandlerBase {
+    /*
+     * Constructor for SignInHandler.
+     * @param signInClient - The client to use for sign-in operations.
+     * @param correlationId - The correlation ID for the request.
+     * @param continuationToken - The continuation token for the sign-in operation.
+     * @param config - The configuration for the client.
+     * @param scopes - The scopes to request during sign-in.
+     */
     constructor(
         protected signInClient: SigninClient,
         correlationId: string,
@@ -40,7 +51,15 @@ abstract class SignInHandler extends HandlerBase {
     }
 }
 
+/*
+ * Handler for sign-in operations that require a code.
+ */
 export class SignInCodeRequiredHandler extends SignInHandler {
+    /*
+     * Submits a code for sign-in.
+     * @param code - The code to submit.
+     * @returns The result of the operation.
+     */
     async submitCode(code: string): Promise<SignInSubmitCodeResult> {
         if (!code) {
             const result = SignInSubmitCodeResult.createWithError(
@@ -78,12 +97,24 @@ export class SignInCodeRequiredHandler extends SignInHandler {
         }
     }
 
+    /*
+     * Resends a code for sign-in.
+     * @returns The result of the operation.
+     */
     async resendCode(): Promise<SignInResendCodeResult> {
         throw new Error("Method not implemented.");
     }
 }
 
+/*
+ * Handler for sign-in operations that require a password.
+ */
 export class SignInPasswordRequiredHandler extends SignInHandler {
+    /*
+     * Submits a password for sign-in.
+     * @param password - The password to submit.
+     * @returns The result of the operation.
+     */
     async sumbmitPassword(
         password: string
     ): Promise<SignInSubmitPasswordResult> {
@@ -99,7 +130,17 @@ export class SignInPasswordRequiredHandler extends SignInHandler {
     }
 }
 
+/*
+ * Handler for sign-in operations that require a continuation token.
+ */
 export class SignInContinuationHandler extends HandlerBase {
+    /*
+     * Constructor for SignInContinuationHandler.
+     * @param correlationId - The correlation ID for the request.
+     * @param continuationToken - The continuation token for the sign-in operation.
+     * @param config - The configuration for the client.
+     * @param username - The username for the sign-in operation.
+     */
     constructor(
         correlationId: string,
         continuationToken: string,
@@ -121,6 +162,11 @@ export class SignInContinuationHandler extends HandlerBase {
         }
     }
 
+    /*
+     * Initiates the sign-in flow with continuation token.
+     * @param scopes - The scopes to request during sign-in.
+     * @returns The result of the operation.
+     */
     signIn(scopes?: Array<string>): Promise<SignInResult> {
         throw new Error(`Method not implemented with parameter: ${scopes}`);
     }

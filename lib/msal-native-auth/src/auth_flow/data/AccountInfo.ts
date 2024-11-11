@@ -17,7 +17,16 @@ import {
     TokenClaims,
 } from "@azure/msal-browser";
 
+/*
+ * Account information.
+ */
 export class AccountInfo {
+    /*
+     * Constructor
+     * @param account - Account data
+     * @param correlationId - Correlation id
+     * @param config - Configuration
+     */
     constructor(
         private readonly account: AccountData,
         private readonly correlationId: string,
@@ -36,18 +45,34 @@ export class AccountInfo {
         }
     }
 
+    /*
+     * Signs the current user out
+     * @returns The result of the operation.
+     */
     signOut(): Promise<SignOutResult> {
         throw new Error("Method not implemented.");
     }
 
+    /*
+     * Gets the account data.
+     * @returns The account data.
+     */
     getAccount(): AccountData {
         return this.account;
     }
 
+    /*
+     * Gets the account id-token.
+     * @returns The account id-token.
+     */
     getIdToken(): string | undefined {
         return this.account.idToken;
     }
 
+    /*
+     * Gets the token claims.
+     * @returns The token claims.
+     */
     getClaims():
         | (TokenClaims & {
               [key: string]:
@@ -62,6 +87,12 @@ export class AccountInfo {
         return this.account.idTokenClaims;
     }
 
+    /*
+     * Gets the access token from cache.
+     * @param forceRefresh - Force a token refresh
+     * @param scopes - The scopes to request
+     * @returns The result of the operation.
+     */
     getAccessToken(
         forceRefresh: boolean = false,
         scopes?: Array<string>

@@ -34,13 +34,27 @@ import { SignInCodeSendResponse } from "../network_client/response/SignInRespons
 import { NativeAuthOperatingContext } from "../operating_context/NativeAuthOperatingContext.js";
 import { INativeAuthStardardController } from "./INativeAuthStandardController.js";
 
+/*
+ * Controller for standard native auth operations.
+ */
 export class NativeAuthStandardController
     extends StandardController
     implements INativeAuthStardardController
 {
-    private readonly signInClient: SigninClient;
+    /*
+     * The client to use for sign-in operations.
+     */
+    private readonly signInClient: SigninClient; // More clients will be added for sign-up, reset password, etc.
+
+    /*
+     * The configuration for the client.
+     */
     private readonly nativeAuthConfig: NativeAuthConfiguration;
 
+    /*
+     * Constructor for NativeAuthStandardController.
+     * @param operatingContext - The operating context for the controller.
+     */
     constructor(operatingContext: NativeAuthOperatingContext) {
         super(operatingContext);
 
@@ -51,6 +65,11 @@ export class NativeAuthStandardController
         // Create more interaction clients here, such as SignUpClient, ResetPasswordClient, etc.
     }
 
+    /*
+     * Gets the current account from the cache.
+     * @param getAccountOptions - Options for getting the current cached account
+     * @returns - A promise that resolves to GetAccountResult
+     */
     async getCurrentAccount(
         getAccountOptions: GetAccountOptions
     ): Promise<GetAccountResult> {
@@ -61,6 +80,11 @@ export class NativeAuthStandardController
         );
     }
 
+    /*
+     * Signs the user in.
+     * @param signInOptions - Options for signing in the user.
+     * @returns The result of the operation.
+     */
     async signIn(signInOptions: SignInOptions): Promise<SignInResult> {
         const correlationId = this.getCorrelationId(signInOptions);
 
@@ -153,6 +177,11 @@ export class NativeAuthStandardController
         }
     }
 
+    /*
+     * Signs the user up.
+     * @param signUpOptions - Options for signing up the user.
+     * @returns The result of the operation
+     */
     async signUp(signUpOptions: SignUpOptions): Promise<SignUpResult> {
         const correlationId = this.getCorrelationId(signUpOptions);
 
@@ -169,6 +198,11 @@ export class NativeAuthStandardController
         );
     }
 
+    /*
+     * Resets the user's password.
+     * @param resetPasswordOptions - Options for resetting the user's password.
+     * @returns The result of the operation.
+     */
     async resetPassword(
         resetPasswordOptions: ResetPasswordOptions
     ): Promise<ResetPasswordStartResult> {

@@ -10,30 +10,40 @@ import {
 import { AccountInfo } from "../data/AccountInfo.js";
 import { ResultBase } from "./ResultBase.js";
 
+/*
+ * Result of a sign-in operation.
+ */
 export class SignInResult extends ResultBase<
     AccountInfo,
     SignInCodeRequiredHandler | SignInPasswordRequiredHandler
-> {
-    constructor(
-        result?: AccountInfo,
-        handler?: SignInCodeRequiredHandler | SignInPasswordRequiredHandler
-    ) {
-        super();
-        this.resultData = result;
-        this.nextStateHandler = handler;
-    }
-}
+> {}
 
+/*
+ * Result of a sign-in operation that requires a code.
+ */
 export class SignInSubmitCodeResult extends ResultBase<AccountInfo> {
-    constructor(result?: AccountInfo) {
-        super();
-        this.resultData = result;
+    constructor(resultData?: AccountInfo) {
+        super(resultData);
     }
 }
 
-export class SignInSubmitPasswordResult extends ResultBase<AccountInfo> {}
+/*
+ * Result of a sign-in operation that requires a password.
+ */
+export class SignInSubmitPasswordResult extends ResultBase<AccountInfo> {
+    constructor(resultData?: AccountInfo) {
+        super(resultData);
+    }
+}
 
+/*
+ * Result of resending code in a sign-in operation.
+ */
 export class SignInResendCodeResult extends ResultBase<
     void,
     SignInCodeRequiredHandler
-> {}
+> {
+    constructor(nextStateHandler?: SignInCodeRequiredHandler) {
+        super(undefined, nextStateHandler);
+    }
+}

@@ -14,7 +14,17 @@ import {
 } from "../result/SignUpResult.js";
 import { HandlerBase } from "./HandlerBase.js";
 
+/*
+ * Base handler for sign-up flow.
+ */
 abstract class SignUpHandler extends HandlerBase {
+    /*
+     * Creates a new SignUpHandler.
+     * @param correlationId - The correlation ID for the request.
+     * @param continuationToken - The continuation token for the request.
+     * @param config - The configuration for the request.
+     * @param username - The username for the request.
+     */
     constructor(
         correlationId: string,
         continuationToken: string,
@@ -33,7 +43,15 @@ abstract class SignUpHandler extends HandlerBase {
     }
 }
 
+/*
+ * Handler for sign-up operations that require a code.
+ */
 export class SignUpCodeRequiredHandler extends SignUpHandler {
+    /*
+     * Submits a code for sign-up.
+     * @param code - The code to submit.
+     * @returns The result of the operation.
+     */
     submitCode(code: string): Promise<SignUpSubmitCodeResult> {
         if (!code) {
             return Promise.resolve(
@@ -46,12 +64,24 @@ export class SignUpCodeRequiredHandler extends SignUpHandler {
         throw new Error("Method not implemented.");
     }
 
+    /*
+     * Resends a code for sign-up.
+     * @returns The result of the operation.
+     */
     resendCode(): Promise<SignUpResendCodeResult> {
         throw new Error("Method not implemented.");
     }
 }
 
+/*
+ * Handler for sign-up operations that require a password.
+ */
 export class SignUpPasswordRequiredHandler extends SignUpHandler {
+    /*
+     * Submits a password for sign-up.
+     * @param password - The password to submit.
+     * @returns The result of the operation.
+     */
     sumbmitPassword(password: string): Promise<SignUpSubmitPasswordResult> {
         if (!password) {
             return Promise.resolve(
@@ -65,7 +95,15 @@ export class SignUpPasswordRequiredHandler extends SignUpHandler {
     }
 }
 
+/*
+ * Handler for sign-up operations that require attributes.
+ */
 export class SignUpAttributesRequiredHandler extends SignUpHandler {
+    /*
+     * Submits attributes for sign-up.
+     * @param attributes - The attributes to submit.
+     * @returns The result of the operation.
+     */
     sumbmitAttributes(
         attributes: UserAccountAttributes
     ): Promise<SignUpSubmitAttributesResult> {

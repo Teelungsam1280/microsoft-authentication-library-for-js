@@ -7,14 +7,43 @@ import { NativeAuthError } from "../../error/NativeAuthError.js";
 import { UnexpectedError } from "../../error/UnexpectedError.js";
 import { HandlerBase } from "../handler/HandlerBase.js";
 
+/*
+ * Base class for a result of an authentication operation.
+ * @typeParam TResult - The type of the result data.
+ * @typeParam THandler - The type of the next state handler.
+ */
 export abstract class ResultBase<
     TResult = void,
     THandler extends HandlerBase | void = void
 > {
-    resultData?: TResult extends void ? never : TResult;
-    error?: NativeAuthError;
-    nextStateHandler?: THandler extends void ? never : THandler;
+    /*
+     *constructor for ResultBase
+     * @param resultData - The result data.
+     * @param nextStateHandler - The next state handler.
+     * @typeParam TResult - The type of the result data.
+     * @typeParam THandler - The type of the next state handler.
+     */
+    constructor(
+        public resultData?: TResult,
+        public nextStateHandler?: THandler
+    ) {
+        this.resultData = resultData;
+        this.nextStateHandler = nextStateHandler;
+    }
 
+    /*
+     * The error that occurred during the authentication operation.
+     */
+    error?: NativeAuthError;
+
+    /*
+     * Creates a result with an error.
+     * @param error - The error that occurred.
+     * @returns The result.
+     * @typeParam TResult - The type of the result data.
+     * @typeParam THandler - The type of the next state handler.
+     * @typeParam TActionResult - The type of the result.
+     */
     static createWithError<
         TResult,
         THandler extends HandlerBase | void,
@@ -33,10 +62,18 @@ export abstract class ResultBase<
         return errorResult;
     }
 
+    /*
+     * Checks if the result is successful.
+     * @returns True if the result is successful, false otherwise.
+     */
     isSuccess(): boolean {
         return !this.error;
     }
 
+    /*
+     * Checks if the flow is completed.
+     * @returns True if the flow is completed, false otherwise.
+     */
     isFlowCompleted(): boolean {
         return !this.resultData;
     }

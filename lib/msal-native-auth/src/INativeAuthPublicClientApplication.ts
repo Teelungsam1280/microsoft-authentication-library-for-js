@@ -15,14 +15,34 @@ import {
 } from "./NativeAuthActionOptions.js";
 
 export interface INativeAuthPublicClientApplication {
+    /*
+     * Gets the current account from the cache.
+     * @param getAccountOptions - Options for getting the current cached account
+     * @returns - A promise that resolves to GetAccountResult
+     */
     getCurrentAccount(
         getAccountOptions: GetAccountOptions
     ): Promise<GetAccountResult>;
 
+    /*
+     * Initiates the sign-in flow.
+     * @param signInOptions - Options for the sign-in flow
+     * @returns - A promise that resolves to SignInResult
+     */
     signIn(signInOptions: SignInOptions): Promise<SignInResult>;
 
+    /*
+     * Initiates the sign-up flow.
+     * @param signUpOptions - Options for the sign-up flow
+     * @returns - A promise that resolves to SignUpResult
+     */
     signUp(signUpOptions: SignUpOptions): Promise<SignUpResult>;
 
+    /*
+     * Initiates the reset password flow.
+     * @param resetPasswordOptions - Options for the reset password flow
+     * @returns - A promise that resolves to ResetPasswordStartResult
+     */
     resetPassword(
         resetPasswordOptions: ResetPasswordOptions
     ): Promise<ResetPasswordStartResult>;
