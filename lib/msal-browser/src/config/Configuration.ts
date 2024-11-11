@@ -125,6 +125,7 @@ export type InternalAuthOptions = Omit<
 export type CacheOptions = {
     /**
      * Used to specify the cacheLocation user wants to set. Valid values are "localStorage", "sessionStorage" and "memoryStorage".
+     * @deprecated This option will be removed in a future major version. Use "sessionStorage" now to minimize future impacts
      */
     cacheLocation?: BrowserCacheLocation | string;
     /**
