@@ -5,7 +5,7 @@
 
 import { NativeAuthApiResponseBase } from "./NativeAuthApiResponseBase.js";
 
-export class ContinuationTokenResponse extends NativeAuthApiResponseBase {
+export class SignInContinuationTokenResponse extends NativeAuthApiResponseBase {
     constructor(
         correlationId?: string,
         public continuationToken?: string,
@@ -15,7 +15,7 @@ export class ContinuationTokenResponse extends NativeAuthApiResponseBase {
     }
 }
 
-export class CodeSendResponse extends NativeAuthApiResponseBase {
+export class SignInCodeSendResponse extends NativeAuthApiResponseBase {
     constructor(
         correlationId?: string,
         public continuationToken?: string,
@@ -30,7 +30,7 @@ export class CodeSendResponse extends NativeAuthApiResponseBase {
     }
 }
 
-export class TokenResponse extends NativeAuthApiResponseBase {
+export class SignInTokenResponse extends NativeAuthApiResponseBase {
     constructor(
         correlationId?: string,
         public tokenType?: string,

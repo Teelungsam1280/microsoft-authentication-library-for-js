@@ -7,28 +7,33 @@ import { FetchClient } from "@azure/msal-browser";
 import { InvalidArgumentError } from "../error/InvalidArgumentError.js";
 import { INativeAuthApiClient } from "./INativeAuthApiClient.js";
 import {
-    InitiateRequest,
-    ChallengeRequest,
-    OobTokenRequest,
-    PasswordTokenRequest,
-    ContinuationTokenRequest,
+    SignInChallengeRequest,
+    SignInContinuationTokenRequest,
+    SignInInitiateRequest,
+    SignInOobTokenRequest,
+    SignInPasswordTokenRequest,
 } from "./request/SignInRequest.js";
 import {
-    ContinuationTokenResponse,
-    CodeSendResponse,
-    TokenResponse,
+    SignInCodeSendResponse,
+    SignInContinuationTokenResponse,
+    SignInTokenResponse,
 } from "./response/SignInResponse.js";
+import { ResponseHandler } from "./ResponseHandler.js";
 
 export class NativeAuthApiClient implements INativeAuthApiClient {
+    private readonly responseHandler: ResponseHandler;
+
     constructor(private readonly httpClient: FetchClient) {
         if (!httpClient) {
             throw new InvalidArgumentError("httpClient");
         }
+
+        this.responseHandler = new ResponseHandler();
     }
 
-    async performInitiateRequest(
-        request: InitiateRequest
-    ): Promise<ContinuationTokenResponse> {
+    async performSignInInitiateRequest(
+        request: SignInInitiateRequest
+    ): Promise<SignInContinuationTokenResponse> {
         /*
          * 1. generate the network request options and request url
          * 2. call httpClient.sendPostRequestAsync to get response
@@ -39,27 +44,27 @@ export class NativeAuthApiClient implements INativeAuthApiClient {
         throw new Error(`Method not implemented with parameter ${request}`);
     }
 
-    async performChanllegeRequest(
-        request: ChallengeRequest
-    ): Promise<CodeSendResponse | ContinuationTokenResponse> {
+    async performSignInChallengeRequest(
+        request: SignInChallengeRequest
+    ): Promise<SignInCodeSendResponse | SignInContinuationTokenResponse> {
         throw new Error(`Method not implemented with parameter ${request}`);
     }
 
-    async performOobTokenRequest(
-        request: OobTokenRequest
-    ): Promise<TokenResponse> {
+    async performSignInOobTokenRequest(
+        request: SignInOobTokenRequest
+    ): Promise<SignInTokenResponse> {
         throw new Error(`Method not implemented with parameter ${request}`);
     }
 
-    async performPasswordTokenRequest(
-        request: PasswordTokenRequest
-    ): Promise<TokenResponse> {
+    async performSignInPasswordTokenRequest(
+        request: SignInPasswordTokenRequest
+    ): Promise<SignInTokenResponse> {
         throw new Error(`Method not implemented with parameter ${request}`);
     }
 
-    async performConituationTokenTokenRequest(
-        request: ContinuationTokenRequest
-    ): Promise<TokenResponse> {
+    async performSignInContinuationTokenTokenRequest(
+        request: SignInContinuationTokenRequest
+    ): Promise<SignInTokenResponse> {
         throw new Error(`Method not implemented with parameter ${request}`);
     }
 }

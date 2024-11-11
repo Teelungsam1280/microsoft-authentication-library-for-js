@@ -4,34 +4,36 @@
  */
 
 import {
-    ChallengeRequest,
-    ContinuationTokenRequest,
-    InitiateRequest,
-    OobTokenRequest,
-    PasswordTokenRequest,
+    SignInChallengeRequest,
+    SignInContinuationTokenRequest,
+    SignInInitiateRequest,
+    SignInOobTokenRequest,
+    SignInPasswordTokenRequest,
 } from "./request/SignInRequest.js";
 import {
-    CodeSendResponse,
-    ContinuationTokenResponse,
-    TokenResponse,
+    SignInCodeSendResponse,
+    SignInContinuationTokenResponse,
+    SignInTokenResponse,
 } from "./response/SignInResponse.js";
 
 export interface INativeAuthApiClient {
-    performInitiateRequest(
-        request: InitiateRequest
-    ): Promise<ContinuationTokenResponse>;
+    performSignInInitiateRequest(
+        request: SignInInitiateRequest
+    ): Promise<SignInContinuationTokenResponse>;
 
-    performChanllegeRequest(
-        request: ChallengeRequest
-    ): Promise<CodeSendResponse | ContinuationTokenResponse>;
+    performSignInChallengeRequest(
+        request: SignInChallengeRequest
+    ): Promise<SignInCodeSendResponse | SignInContinuationTokenResponse>;
 
-    performOobTokenRequest(request: OobTokenRequest): Promise<TokenResponse>;
+    performSignInOobTokenRequest(
+        request: SignInOobTokenRequest
+    ): Promise<SignInTokenResponse>;
 
-    performPasswordTokenRequest(
-        request: PasswordTokenRequest
-    ): Promise<TokenResponse>;
+    performSignInPasswordTokenRequest(
+        request: SignInPasswordTokenRequest
+    ): Promise<SignInTokenResponse>;
 
-    performConituationTokenTokenRequest(
-        request: ContinuationTokenRequest
-    ): Promise<TokenResponse>;
+    performSignInContinuationTokenTokenRequest(
+        request: SignInContinuationTokenRequest
+    ): Promise<SignInTokenResponse>;
 }

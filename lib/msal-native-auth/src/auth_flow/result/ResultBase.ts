@@ -11,7 +11,7 @@ export abstract class ResultBase<
     TResult = void,
     THandler extends HandlerBase | void = void
 > {
-    result?: TResult extends void ? never : TResult;
+    resultData?: TResult extends void ? never : TResult;
     error?: NativeAuthError;
     nextStateHandler?: THandler extends void ? never : THandler;
 
@@ -38,6 +38,6 @@ export abstract class ResultBase<
     }
 
     isFlowCompleted(): boolean {
-        return !this.result;
+        return !this.resultData;
     }
 }

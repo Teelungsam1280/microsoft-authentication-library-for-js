@@ -3,17 +3,16 @@
  * Licensed under the MIT License.
  */
 
-import { InvalidArgumentError } from "../error/InvalidArgumentError.js";
 import { RedirectError, UnknownApiError } from "../error/NativeAuthApiError.js";
 import { ChallengeTypeConstants } from "../NativeAuthConstants.js";
 import { INativeAuthApiClient } from "../network_client/INativeAuthApiClient.js";
 import {
-    ChallengeRequest,
-    InitiateRequest,
+    SignInChallengeRequest,
+    SignInInitiateRequest,
 } from "../network_client/request/SignInRequest.js";
 import {
-    CodeSendResponse,
-    ContinuationTokenResponse,
+    SignInCodeSendResponse,
+    SignInContinuationTokenResponse,
 } from "../network_client/response/SignInResponse.js";
 import { InteractionClientBase } from "./InteractionClientBase.js";
 import {
@@ -30,12 +29,8 @@ import {
 } from "./result/SignInActionResult.js";
 
 export class SigninClient extends InteractionClientBase {
-    constructor(public nativeAuthApiClient: INativeAuthApiClient) {
-        super();
-
-        if (!nativeAuthApiClient) {
-            throw new InvalidArgumentError("nativeAuthApiClient");
-        }
+    constructor(nativeAuthApiClient: INativeAuthApiClient) {
+        super(nativeAuthApiClient);
     }
 
     async start(
@@ -47,11 +42,11 @@ export class SigninClient extends InteractionClientBase {
          * The followings are just some sample codes to demonstrate how to use the nativeAuthApiClient.
          */
 
-        const initiateRequest = InitiateRequest.create(parameters);
+        const initiateRequest = SignInInitiateRequest.create(parameters);
 
         // There is no need to catch the error here. If an error is thrown, it should be caught by the caller.
         const initiateResponse =
-            await this.nativeAuthApiClient.performInitiateRequest(
+            await this.nativeAuthApiClient.performSignInInitiateRequest(
                 initiateRequest
             );
 
@@ -74,14 +69,14 @@ export class SigninClient extends InteractionClientBase {
         }
 
         // Create challenge request.
-        const challengeRequest = ChallengeRequest.create(
+        const challengeRequest = SignInChallengeRequest.create(
             parameters,
             continuationToken
         );
 
         // Call challenge endpoint.
         const challengeResponse =
-            await this.nativeAuthApiClient.performChanllegeRequest(
+            await this.nativeAuthApiClient.performSignInChallengeRequest(
                 challengeRequest
             );
 
@@ -92,7 +87,7 @@ export class SigninClient extends InteractionClientBase {
         }
 
         if (
-            challengeResponse instanceof ContinuationTokenResponse &&
+            challengeResponse instanceof SignInContinuationTokenResponse &&
             challengeResponse.challengeType === ChallengeTypeConstants.PASSWORD
         ) {
             // Password is required
@@ -102,7 +97,7 @@ export class SigninClient extends InteractionClientBase {
                 challengeResponse.challengeType
             );
         } else if (
-            challengeResponse instanceof CodeSendResponse &&
+            challengeResponse instanceof SignInCodeSendResponse &&
             challengeResponse.challengeType === ChallengeTypeConstants.OOB
         ) {
             /*

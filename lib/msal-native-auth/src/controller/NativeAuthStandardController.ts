@@ -30,7 +30,7 @@ import {
 } from "../NativeAuthActionOptions.js";
 import { NativeAuthConfiguration } from "../NativeAuthConfiguration.js";
 import { NativeAuthApiClient } from "../network_client/NativeAuthApiClient.js";
-import { CodeSendResponse } from "../network_client/response/SignInResponse.js";
+import { SignInCodeSendResponse } from "../network_client/response/SignInResponse.js";
 import { NativeAuthOperatingContext } from "../operating_context/NativeAuthOperatingContext.js";
 import { INativeAuthStardardController } from "./INativeAuthStandardController.js";
 
@@ -133,7 +133,7 @@ export class NativeAuthStandardController
                 );
 
                 return new SignInResult(accountManager);
-            } else if (startResult instanceof CodeSendResponse) {
+            } else if (startResult instanceof SignInCodeSendResponse) {
                 // require code
                 return new SignInResult(
                     undefined,

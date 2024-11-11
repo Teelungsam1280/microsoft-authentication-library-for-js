@@ -3,4 +3,13 @@
  * Licensed under the MIT License.
  */
 
-export abstract class InteractionClientBase {}
+import { InvalidArgumentError } from "../error/InvalidArgumentError.js";
+import { INativeAuthApiClient } from "../network_client/INativeAuthApiClient.js";
+
+export abstract class InteractionClientBase {
+    constructor(protected nativeAuthApiClient: INativeAuthApiClient) {
+        if (!nativeAuthApiClient) {
+            throw new InvalidArgumentError("nativeAuthApiClient");
+        }
+    }
+}

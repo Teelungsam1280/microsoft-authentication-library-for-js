@@ -6,6 +6,7 @@
 import {
     SignInCodeRequiredHandler,
     SignInPasswordRequiredHandler,
+    UserNotFoundError,
 } from "@azure/msal-native-auth";
 import { AccountInfo } from "@azure/msal-native-auth";
 import { SignInOptions } from "@azure/msal-native-auth";
@@ -35,13 +36,19 @@ export async function signin(
     if (!result.isSuccess) {
         // check the errr type and handle error
 
+        if (result.error instanceof UserNotFoundError) {
+            // handle user not found error
+        } else {
+            // handle unexpected error
+        }
+
         return;
     }
 
     // Check if the flow is completed
     if (result.isFlowCompleted()) {
-        // Get the account manager which can be used to get account information, tokens, and sign out.
-        const accountManager: AccountInfo = result.result as AccountInfo;
+        // Get the account info which can be used to get account data, tokens, and sign out.
+        const accountManager: AccountInfo = result.resultData as AccountInfo;
 
         accountManager.getAccount();
         accountManager.getIdToken();
@@ -65,7 +72,8 @@ export async function signin(
         }
 
         // Get the account manager which can be used to get account information, tokens, and sign out.
-        const accountManager: AccountInfo = result.result as AccountInfo;
+        const accountManager: AccountInfo =
+            submitCodeResult.resultData as AccountInfo;
 
         accountManager.getAccount();
         accountManager.getIdToken();
@@ -100,7 +108,8 @@ export async function signin(
         }
 
         // Get the account manager which can be used to get account information, tokens, and sign out.
-        const accountManager: AccountInfo = result.result as AccountInfo;
+        const accountManager: AccountInfo =
+            submitCodeResult.resultData as AccountInfo;
 
         accountManager.getAccount();
         accountManager.getIdToken();
@@ -124,7 +133,8 @@ export async function signin(
         }
 
         // Get the account manager which can be used to get account information, tokens, and sign out.
-        const accountManager: AccountInfo = result.result as AccountInfo;
+        const accountManager: AccountInfo =
+            submitPasswordResult.resultData as AccountInfo;
 
         accountManager.getAccount();
         accountManager.getIdToken();

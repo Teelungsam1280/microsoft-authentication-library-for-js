@@ -19,7 +19,7 @@ export class SignInResult extends ResultBase<
         handler?: SignInCodeRequiredHandler | SignInPasswordRequiredHandler
     ) {
         super();
-        this.result = result;
+        this.resultData = result;
         this.nextStateHandler = handler;
     }
 }
@@ -27,7 +27,7 @@ export class SignInResult extends ResultBase<
 export class SignInSubmitCodeResult extends ResultBase<AccountInfo> {
     constructor(result?: AccountInfo) {
         super();
-        this.result = result;
+        this.resultData = result;
     }
 }
 
