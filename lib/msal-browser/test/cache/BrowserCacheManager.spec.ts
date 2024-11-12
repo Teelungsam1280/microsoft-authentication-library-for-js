@@ -138,67 +138,6 @@ describe("BrowserCacheManager tests", () => {
             expect(browserStorage.clear).not.toBeNull();
         });
 
-        it("Migrates cache entries from the old cache format", () => {
-            const migrationCacheConfig = {
-                ...cacheConfig,
-                cacheMigrationEnabled: true,
-            };
-            const idTokenKey = `${Constants.CACHE_PREFIX}.${PersistentCacheKeys.ID_TOKEN}`;
-            const clientInfoKey = `${Constants.CACHE_PREFIX}.${PersistentCacheKeys.CLIENT_INFO}`;
-            const errorKey = `${Constants.CACHE_PREFIX}.${PersistentCacheKeys.ERROR}`;
-            const errorDescKey = `${Constants.CACHE_PREFIX}.${PersistentCacheKeys.ERROR_DESC}`;
-            const errorKeyVal = "error_code";
-            const errorDescVal = "error occurred";
-            window.sessionStorage.setItem(idTokenKey, TEST_TOKENS.IDTOKEN_V2);
-            window.sessionStorage.setItem(
-                clientInfoKey,
-                TEST_DATA_CLIENT_INFO.TEST_RAW_CLIENT_INFO
-            );
-            window.sessionStorage.setItem(errorKey, errorKeyVal);
-            window.sessionStorage.setItem(errorDescKey, errorDescVal);
-
-            const browserStorage = new BrowserCacheManager(
-                TEST_CONFIG.MSAL_CLIENT_ID,
-                migrationCacheConfig,
-                browserCrypto,
-                logger
-            );
-            expect(window.sessionStorage.getItem(idTokenKey)).toBe(
-                TEST_TOKENS.IDTOKEN_V2
-            );
-            expect(window.sessionStorage.getItem(clientInfoKey)).toBe(
-                TEST_DATA_CLIENT_INFO.TEST_RAW_CLIENT_INFO
-            );
-            expect(window.sessionStorage.getItem(errorKey)).toBe(errorKeyVal);
-            expect(window.sessionStorage.getItem(errorDescKey)).toBe(
-                errorDescVal
-            );
-            expect(
-                browserStorage.getTemporaryCache(
-                    PersistentCacheKeys.ID_TOKEN,
-                    true
-                )
-            ).toBe(TEST_TOKENS.IDTOKEN_V2);
-            expect(
-                browserStorage.getTemporaryCache(
-                    PersistentCacheKeys.CLIENT_INFO,
-                    true
-                )
-            ).toBe(TEST_DATA_CLIENT_INFO.TEST_RAW_CLIENT_INFO);
-            expect(
-                browserStorage.getTemporaryCache(
-                    PersistentCacheKeys.ERROR,
-                    true
-                )
-            ).toBe(errorKeyVal);
-            expect(
-                browserStorage.getTemporaryCache(
-                    PersistentCacheKeys.ERROR_DESC,
-                    true
-                )
-            ).toBe(errorDescVal);
-        });
-
         it("Adds existing tokens to token key map on initialization", () => {
             // Pre-populate localstorage with tokens
             const testIdToken = CacheHelpers.createIdTokenEntity(

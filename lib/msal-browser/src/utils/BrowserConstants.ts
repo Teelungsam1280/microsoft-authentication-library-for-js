@@ -57,6 +57,9 @@ export type NativeExtensionMethod =
     (typeof NativeExtensionMethod)[keyof typeof NativeExtensionMethod];
 
 export const BrowserCacheLocation = {
+    /**
+     * @deprecated Use sessionStorage instead
+     */
     LocalStorage: "localStorage",
     SessionStorage: "sessionStorage",
     MemoryStorage: "memoryStorage",

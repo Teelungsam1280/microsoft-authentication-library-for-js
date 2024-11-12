@@ -6,7 +6,6 @@
 import {
     Constants,
     PersistentCacheKeys,
-    StringUtils,
     CommonAuthorizationCodeRequest,
     ICrypto,
     AccountEntity,
@@ -25,7 +24,6 @@ import {
     ActiveAccountFilters,
     CcsCredential,
     CcsCredentialType,
-    AuthToken,
     ValidCredentialType,
     TokenKeys,
     CredentialType,
@@ -39,7 +37,6 @@ import {
     CacheHelpers,
     StoreInCache,
     CacheError,
-    UrlString,
     CredentialEntity,
 } from "@azure/msal-common/browser";
 import { CacheOptions } from "../config/Configuration.js";
@@ -124,7 +121,6 @@ export class BrowserCacheManager extends CacheManager {
 
         // Migrate cache entries from older versions of MSAL.
         if (cacheConfig.cacheMigrationEnabled) {
-            this.migrateCacheEntries();
             this.createKeyMaps();
         }
 
@@ -181,42 +177,6 @@ export class BrowserCacheManager extends CacheManager {
             default:
                 return this.internalStorage;
         }
-    }
-
-    /**
-     * Migrate all old cache entries to new schema. No rollback supported.
-     * @param storeAuthStateInCookie
-     */
-    protected migrateCacheEntries(): void {
-        const idTokenKey = `${Constants.CACHE_PREFIX}.${PersistentCacheKeys.ID_TOKEN}`;
-        const clientInfoKey = `${Constants.CACHE_PREFIX}.${PersistentCacheKeys.CLIENT_INFO}`;
-        const errorKey = `${Constants.CACHE_PREFIX}.${PersistentCacheKeys.ERROR}`;
-        const errorDescKey = `${Constants.CACHE_PREFIX}.${PersistentCacheKeys.ERROR_DESC}`;
-
-        const idTokenValue = this.browserStorage.getItem(idTokenKey);
-        const clientInfoValue = this.browserStorage.getItem(clientInfoKey);
-        const errorValue = this.browserStorage.getItem(errorKey);
-        const errorDescValue = this.browserStorage.getItem(errorDescKey);
-
-        const values = [
-            idTokenValue,
-            clientInfoValue,
-            errorValue,
-            errorDescValue,
-        ];
-        const keysToMigrate = [
-            PersistentCacheKeys.ID_TOKEN,
-            PersistentCacheKeys.CLIENT_INFO,
-            PersistentCacheKeys.ERROR,
-            PersistentCacheKeys.ERROR_DESC,
-        ];
-
-        keysToMigrate.forEach((cacheKey: string, index: number) => {
-            const value = values[index];
-            if (value) {
-                this.setTemporaryCache(cacheKey, value, true);
-            }
-        });
     }
 
     /**
@@ -1372,10 +1332,7 @@ export class BrowserCacheManager extends CacheManager {
     generateCacheKey(key: string): string {
         const generatedKey = validateAndParseJson(key);
         if (!generatedKey) {
-            if (
-                StringUtils.startsWith(key, Constants.CACHE_PREFIX) ||
-                StringUtils.startsWith(key, PersistentCacheKeys.ADAL_ID_TOKEN)
-            ) {
+            if (key.startsWith(Constants.CACHE_PREFIX)) {
                 return key;
             }
             return `${Constants.CACHE_PREFIX}.${this.clientId}.${key}`;
@@ -1706,58 +1663,6 @@ export class BrowserCacheManager extends CacheManager {
         ) {
             this.removeTemporaryItem(key);
         }
-    }
-
-    /**
-     * Returns username retrieved from ADAL or MSAL v1 idToken
-     * @deprecated
-     */
-    getLegacyLoginHint(): string | null {
-        // Only check for adal/msal token if no SSO params are being used
-        const adalIdTokenString = this.getTemporaryCache(
-            PersistentCacheKeys.ADAL_ID_TOKEN
-        );
-        if (adalIdTokenString) {
-            this.browserStorage.removeItem(PersistentCacheKeys.ADAL_ID_TOKEN);
-            this.logger.verbose("Cached ADAL id token retrieved.");
-        }
-
-        // Check for cached MSAL v1 id token
-        const msalIdTokenString = this.getTemporaryCache(
-            PersistentCacheKeys.ID_TOKEN,
-            true
-        );
-        if (msalIdTokenString) {
-            this.browserStorage.removeItem(
-                this.generateCacheKey(PersistentCacheKeys.ID_TOKEN)
-            );
-            this.logger.verbose("Cached MSAL.js v1 id token retrieved");
-        }
-
-        const cachedIdTokenString = msalIdTokenString || adalIdTokenString;
-        if (cachedIdTokenString) {
-            const idTokenClaims = AuthToken.extractTokenClaims(
-                cachedIdTokenString,
-                base64Decode
-            );
-            if (idTokenClaims.preferred_username) {
-                this.logger.verbose(
-                    "No SSO params used and ADAL/MSAL v1 token retrieved, setting ADAL/MSAL v1 preferred_username as loginHint"
-                );
-                return idTokenClaims.preferred_username;
-            } else if (idTokenClaims.upn) {
-                this.logger.verbose(
-                    "No SSO params used and ADAL/MSAL v1 token retrieved, setting ADAL/MSAL v1 upn as loginHint"
-                );
-                return idTokenClaims.upn;
-            } else {
-                this.logger.verbose(
-                    "No SSO params used and ADAL/MSAL v1 token retrieved, however, no account hint claim found. Enable preferred_username or upn id token claim to get SSO."
-                );
-            }
-        }
-
-        return null;
     }
 
     /**
