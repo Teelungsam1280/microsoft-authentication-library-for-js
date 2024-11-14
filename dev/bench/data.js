@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1731425937816,
+  "lastUpdate": 1731624973978,
   "repoUrl": "https://github.com/AzureAD/microsoft-authentication-library-for-js",
   "entries": {
     "msal-node client-credential Regression Test": [
@@ -13480,6 +13480,44 @@ window.BENCHMARK_DATA = {
             "range": "±1.83%",
             "unit": "ops/sec",
             "extra": "218 samples"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "tyleonha@microsoft.com",
+            "name": "Tyler James Leonhardt",
+            "username": "TylerLeonhardt"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "2b750fbb1dd11d3b397c43c0f186a59ddb095c40",
+          "message": "Catch Dpapi Require error (#7412)\n\nFor usages of msal-node-extensions that don't need persistance - like if\r\nyou just want to use the Broker.\r\n\r\nWe are hitting this in VS Code because we are trying to bundle our code\r\nwith Webpack... but since the require of DPAPI happens regardless of\r\nwhat features you use, we get an error from locating this `.node` file,\r\nwhich I have not included in our bundle.\r\n\r\n---------\r\n\r\nCo-authored-by: Thomas Norling <thomas.norling@microsoft.com>",
+          "timestamp": "2024-11-14T14:50:40-08:00",
+          "tree_id": "6d8871d5f10c8e524a8d53ea9ed4cba0b21d3ddb",
+          "url": "https://github.com/AzureAD/microsoft-authentication-library-for-js/commit/2b750fbb1dd11d3b397c43c0f186a59ddb095c40"
+        },
+        "date": 1731624972748,
+        "tool": "benchmarkjs",
+        "benches": [
+          {
+            "name": "ConfidentialClientApplication#acquireTokenByClientCredential-fromCache-resourceIsFirstItemInTheCache",
+            "value": 194201,
+            "range": "±2.03%",
+            "unit": "ops/sec",
+            "extra": "222 samples"
+          },
+          {
+            "name": "ConfidentialClientApplication#acquireTokenByClientCredential-fromCache-resourceIsLastItemInTheCache",
+            "value": 190023,
+            "range": "±2.03%",
+            "unit": "ops/sec",
+            "extra": "223 samples"
           }
         ]
       }
