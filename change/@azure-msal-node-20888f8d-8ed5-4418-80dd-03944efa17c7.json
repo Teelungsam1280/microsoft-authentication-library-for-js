@@ -1,6 +1,6 @@
 {
   "type": "minor",
-  "comment": "added token revocation funcitonality to managed identity",
+  "comment": "Added token revocation functionality to managed identity (#7422)",
   "packageName": "@azure/msal-node",
   "email": "rginsburg@microsoft.com",
   "dependentChangeType": "patch"

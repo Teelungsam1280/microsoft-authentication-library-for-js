@@ -389,6 +389,7 @@ export class ManagedIdentityApplication {
 
 // @public (undocumented)
 export type ManagedIdentityConfiguration = {
+    clientCapabilities?: Array<string>;
     managedIdentityIdParams?: ManagedIdentityIdParams;
     system?: NodeSystemOptions;
 };
