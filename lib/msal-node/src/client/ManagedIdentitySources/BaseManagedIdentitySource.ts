@@ -139,7 +139,7 @@ export abstract class BaseManagedIdentitySource {
         }
 
         // if client capabilities are present, send them to ESTS
-        if (managedIdentityRequest.clientCapabilities) {
+        if (managedIdentityRequest.clientCapabilities.length) {
             networkRequest.queryParameters.xms_cc =
                 managedIdentityRequest.clientCapabilities.toString();
         }
