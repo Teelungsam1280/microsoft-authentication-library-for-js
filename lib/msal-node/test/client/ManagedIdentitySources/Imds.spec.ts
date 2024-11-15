@@ -55,6 +55,7 @@ import {
 } from "../../../src";
 // NodeJS 16+ provides a built-in version of setTimeout that is promise-based
 import { setTimeout } from "timers/promises";
+import { CAE_CONSTANTS } from "../../test_kit/StringConstants.js";
 
 describe("Acquires a token successfully via an IMDS Managed Identity", () => {
     // IMDS doesn't need environment variables because there is a default IMDS endpoint
@@ -549,7 +550,44 @@ describe("Acquires a token successfully via an IMDS Managed Identity", () => {
             );
         });
 
-        test("ignores a cached token when claims are provided", async () => {
+        test('ensures "xms=client-capabilites-string" was sent to ESTS', async () => {
+            const sendGetRequestAsyncSpy: jest.SpyInstance = jest.spyOn(
+                networkClient,
+                <any>"sendGetRequestAsync"
+            );
+
+            const systemAssignedManagedIdentityApplicationWithClientCapabilities: ManagedIdentityApplication =
+                new ManagedIdentityApplication({
+                    ...systemAssignedConfig,
+                    clientCapabilities: CAE_CONSTANTS.CLIENT_CAPABILITIES,
+                });
+
+            const networkManagedIdentityResult: AuthenticationResult =
+                await systemAssignedManagedIdentityApplicationWithClientCapabilities.acquireToken(
+                    {
+                        claims: TEST_CONFIG.CLAIMS,
+                        resource: MANAGED_IDENTITY_RESOURCE,
+                    }
+                );
+            expect(networkManagedIdentityResult.accessToken).toEqual(
+                DEFAULT_SYSTEM_ASSIGNED_MANAGED_IDENTITY_AUTHENTICATION_RESULT.accessToken
+            );
+
+            const tokenRequest = sendGetRequestAsyncSpy.mock.lastCall;
+            const url = tokenRequest[0];
+            expect(
+                url.includes(
+                    `xms_cc=${CAE_CONSTANTS.CLIENT_CAPABILITIES.toString()}`
+                )
+            ).toBe(true);
+        });
+
+        test('ignores a cached token when claims are provided, and ensures "bypass_cache=true" was sent to ESTS', async () => {
+            const sendGetRequestAsyncSpy: jest.SpyInstance = jest.spyOn(
+                networkClient,
+                <any>"sendGetRequestAsync"
+            );
+
             let networkManagedIdentityResult: AuthenticationResult =
                 await systemAssignedManagedIdentityApplication.acquireToken({
                     resource: MANAGED_IDENTITY_RESOURCE,
@@ -578,6 +616,10 @@ describe("Acquires a token successfully via an IMDS Managed Identity", () => {
             expect(networkManagedIdentityResult.accessToken).toEqual(
                 DEFAULT_SYSTEM_ASSIGNED_MANAGED_IDENTITY_AUTHENTICATION_RESULT.accessToken
             );
+
+            const tokenRequest = sendGetRequestAsyncSpy.mock.lastCall;
+            const url = tokenRequest[0];
+            expect(url.includes("bypass_cache=true")).toBe(true);
         });
 
         test("ignores a cached token when forceRefresh is set to true", async () => {

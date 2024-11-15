@@ -140,6 +140,7 @@ export class ManagedIdentityApplication {
             ],
             authority: this.fakeAuthority.canonicalAuthority,
             correlationId: this.cryptoProvider.createNewGuid(),
+            claims: managedIdentityRequestParams.claims,
         };
 
         if (
@@ -150,7 +151,9 @@ export class ManagedIdentityApplication {
             return this.managedIdentityClient.sendManagedIdentityTokenRequest(
                 managedIdentityRequest,
                 this.config.managedIdentityId,
-                this.fakeAuthority
+                this.fakeAuthority,
+                undefined,
+                this.config.clientCapabilities
             );
         }
 

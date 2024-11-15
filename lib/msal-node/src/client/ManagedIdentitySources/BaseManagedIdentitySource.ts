@@ -125,13 +125,25 @@ export abstract class BaseManagedIdentitySource {
         managedIdentityRequest: ManagedIdentityRequest,
         managedIdentityId: ManagedIdentityId,
         fakeAuthority: Authority,
-        refreshAccessToken?: boolean
+        refreshAccessToken?: boolean,
+        clientCapabilities?: Array<string>
     ): Promise<AuthenticationResult> {
         const networkRequest: ManagedIdentityRequestParameters =
             this.createRequest(
                 managedIdentityRequest.resource,
                 managedIdentityId
             );
+
+        // if claims are present, token proxies will clear their token cache and request a new token from ESTS
+        if (managedIdentityRequest.claims) {
+            networkRequest.queryParameters.bypass_cache = "true";
+        }
+
+        // an optional non-empty string query parameter used to send client capabilities to ESTS
+        if (clientCapabilities) {
+            networkRequest.queryParameters.xms_cc =
+                clientCapabilities.toString();
+        }
 
         const headers: Record<string, string> = networkRequest.headers;
         headers[HeaderNames.CONTENT_TYPE] = Constants.URL_FORM_CONTENT_TYPE;
