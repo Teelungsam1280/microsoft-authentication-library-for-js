@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1731956729886,
+  "lastUpdate": 1731962598956,
   "repoUrl": "https://github.com/AzureAD/microsoft-authentication-library-for-js",
   "entries": {
     "msal-node client-credential Regression Test": [
@@ -13556,6 +13556,44 @@ window.BENCHMARK_DATA = {
             "range": "±2.05%",
             "unit": "ops/sec",
             "extra": "222 samples"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "87724641+Robbie-Microsoft@users.noreply.github.com",
+            "name": "Robbie-Microsoft",
+            "username": "Robbie-Microsoft"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "6362e79cfff838ec5c57efbfeffc3e5262dc2513",
+          "message": "Distributed Cache Now Removes the Last Item (#7426)\n\nPlease see #7328 for a detailed description.\r\n\r\nCloses #7324, Closes #6954\r\n\r\n---------\r\n\r\nCo-authored-by: LuccaRebelloToledo <luccarebtoledo@gmail.com>\r\nCo-authored-by: Lucca Toledo <99377036+LuccaRebelloToledo@users.noreply.github.com>",
+          "timestamp": "2024-11-18T15:37:29-05:00",
+          "tree_id": "4a6862e95a10d24644dd7e64eeba1e827e1e5d29",
+          "url": "https://github.com/AzureAD/microsoft-authentication-library-for-js/commit/6362e79cfff838ec5c57efbfeffc3e5262dc2513"
+        },
+        "date": 1731962596928,
+        "tool": "benchmarkjs",
+        "benches": [
+          {
+            "name": "ConfidentialClientApplication#acquireTokenByClientCredential-fromCache-resourceIsFirstItemInTheCache",
+            "value": 202373,
+            "range": "±2.08%",
+            "unit": "ops/sec",
+            "extra": "221 samples"
+          },
+          {
+            "name": "ConfidentialClientApplication#acquireTokenByClientCredential-fromCache-resourceIsLastItemInTheCache",
+            "value": 194650,
+            "range": "±2.10%",
+            "unit": "ops/sec",
+            "extra": "224 samples"
           }
         ]
       }
