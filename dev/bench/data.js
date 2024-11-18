@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1731624973978,
+  "lastUpdate": 1731956729886,
   "repoUrl": "https://github.com/AzureAD/microsoft-authentication-library-for-js",
   "entries": {
     "msal-node client-credential Regression Test": [
@@ -13518,6 +13518,44 @@ window.BENCHMARK_DATA = {
             "range": "±2.03%",
             "unit": "ops/sec",
             "extra": "223 samples"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "87724641+Robbie-Microsoft@users.noreply.github.com",
+            "name": "Robbie-Microsoft",
+            "username": "Robbie-Microsoft"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "1a82bfbfeaac1e971870acf7e4921d3c68439d06",
+          "message": "Converted Certificate Sample to TypeScript (#7368)\n\nThis is the first time we'll have an E2E test running on a TypeScript\r\nsample. They all currently run on JS samples.",
+          "timestamp": "2024-11-18T13:59:51-05:00",
+          "tree_id": "6ce228dc10fa82efb05a1eb9f051c1d679634534",
+          "url": "https://github.com/AzureAD/microsoft-authentication-library-for-js/commit/1a82bfbfeaac1e971870acf7e4921d3c68439d06"
+        },
+        "date": 1731956728710,
+        "tool": "benchmarkjs",
+        "benches": [
+          {
+            "name": "ConfidentialClientApplication#acquireTokenByClientCredential-fromCache-resourceIsFirstItemInTheCache",
+            "value": 189294,
+            "range": "±1.94%",
+            "unit": "ops/sec",
+            "extra": "224 samples"
+          },
+          {
+            "name": "ConfidentialClientApplication#acquireTokenByClientCredential-fromCache-resourceIsLastItemInTheCache",
+            "value": 199927,
+            "range": "±2.05%",
+            "unit": "ops/sec",
+            "extra": "222 samples"
           }
         ]
       }
