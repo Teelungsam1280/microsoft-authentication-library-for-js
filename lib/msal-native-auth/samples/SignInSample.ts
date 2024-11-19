@@ -4,12 +4,12 @@
  */
 
 import {
-    SignInCodeRequiredHandler,
-    SignInPasswordRequiredHandler,
+    SignInCodeRequiredState,
+    SignInPasswordRequiredState,
     UserNotFoundError,
 } from "@azure/msal-native-auth";
 import { AccountInfo } from "@azure/msal-native-auth";
-import { SignInOptions } from "@azure/msal-native-auth";
+import { SignInInputs } from "@azure/msal-native-auth";
 import { NativeAuthConfiguration } from "@azure/msal-native-auth";
 import { NativeAuthPublicClientApplication } from "@azure/msal-native-auth";
 
@@ -26,7 +26,7 @@ export async function signin(
 
     const app = NativeAuthPublicClientApplication.create(config);
 
-    const signInOptions: SignInOptions = {
+    const signInOptions: SignInInputs = {
         username: username,
         password: password,
     };
@@ -48,7 +48,7 @@ export async function signin(
     // Check if the flow is completed
     if (result.isFlowCompleted()) {
         // Get the account info which can be used to get account data, tokens, and sign out.
-        const accountManager: AccountInfo = result.resultData as AccountInfo;
+        const accountManager: AccountInfo = result.data as AccountInfo;
 
         accountManager.getAccount();
         accountManager.getIdToken();
@@ -59,11 +59,11 @@ export async function signin(
     }
 
     // code required
-    if (result.nextStateHandler instanceof SignInCodeRequiredHandler) {
+    if (result.state instanceof SignInCodeRequiredState) {
         // collect code from customer.
         const code = "test-code";
 
-        const submitCodeResult = await result.nextStateHandler.submitCode(code);
+        const submitCodeResult = await result.state.submitCode(code);
 
         if (!submitCodeResult.isSuccess) {
             // handle error
@@ -73,7 +73,7 @@ export async function signin(
 
         // Get the account manager which can be used to get account information, tokens, and sign out.
         const accountManager: AccountInfo =
-            submitCodeResult.resultData as AccountInfo;
+            submitCodeResult.data as AccountInfo;
 
         accountManager.getAccount();
         accountManager.getIdToken();
@@ -84,9 +84,9 @@ export async function signin(
     }
 
     // resend code and submit code
-    if (result.nextStateHandler instanceof SignInCodeRequiredHandler) {
+    if (result.state instanceof SignInCodeRequiredState) {
         // resend code
-        const resendCodeResult = await result.nextStateHandler.resendCode();
+        const resendCodeResult = await result.state.resendCode();
 
         if (!resendCodeResult.isSuccess) {
             // handle error
@@ -98,7 +98,7 @@ export async function signin(
         const code = "test-code";
 
         const submitCodeResult = await (
-            resendCodeResult.nextStateHandler as SignInCodeRequiredHandler
+            resendCodeResult.state as SignInCodeRequiredState
         ).submitCode(code);
 
         if (!submitCodeResult.isSuccess) {
@@ -109,7 +109,7 @@ export async function signin(
 
         // Get the account manager which can be used to get account information, tokens, and sign out.
         const accountManager: AccountInfo =
-            submitCodeResult.resultData as AccountInfo;
+            submitCodeResult.data as AccountInfo;
 
         accountManager.getAccount();
         accountManager.getIdToken();
@@ -120,11 +120,10 @@ export async function signin(
     }
 
     // password required
-    if (result.nextStateHandler instanceof SignInPasswordRequiredHandler) {
+    if (result.state instanceof SignInPasswordRequiredState) {
         // collect password from customer.
         const pwd = "test-password";
-        const submitPasswordResult =
-            await result.nextStateHandler.sumbmitPassword(pwd);
+        const submitPasswordResult = await result.state.sumbmitPassword(pwd);
 
         if (!submitPasswordResult.isSuccess) {
             // handle error
@@ -134,7 +133,7 @@ export async function signin(
 
         // Get the account manager which can be used to get account information, tokens, and sign out.
         const accountManager: AccountInfo =
-            submitPasswordResult.resultData as AccountInfo;
+            submitPasswordResult.data as AccountInfo;
 
         accountManager.getAccount();
         accountManager.getIdToken();

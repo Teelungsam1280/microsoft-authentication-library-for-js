@@ -12,11 +12,11 @@ import { INativeAuthStardardController } from "./controller/INativeAuthStandardC
 import { NativeAuthStandardController } from "./controller/NativeAuthStandardController.js";
 import { INativeAuthPublicClientApplication } from "./INativeAuthPublicClientApplication.js";
 import {
-    GetAccountOptions,
-    SignInOptions,
-    SignUpOptions,
-    ResetPasswordOptions,
-} from "./NativeAuthActionOptions.js";
+    GetAccountInputs,
+    SignInInputs,
+    SignUpInputs,
+    ResetPasswordInputs,
+} from "./NativeAuthActionInputs.js";
 import { NativeAuthConfiguration } from "./NativeAuthConfiguration.js";
 import { NativeAuthOperatingContext } from "./operating_context/NativeAuthOperatingContext.js";
 
@@ -60,7 +60,7 @@ export class NativeAuthPublicClientApplication
      * @returns - A promise that resolves to GetAccountResult
      */
     getCurrentAccount(
-        getAccountOptions: GetAccountOptions
+        getAccountOptions: GetAccountInputs
     ): Promise<GetAccountResult> {
         throw new Error(
             `Method not implemented with parameter ${getAccountOptions}`
@@ -72,7 +72,7 @@ export class NativeAuthPublicClientApplication
      * @param signInOptions - Options for the sign-in flow
      * @returns - A promise that resolves to SignInResult
      */
-    signIn(signInOptions: SignInOptions): Promise<SignInResult> {
+    signIn(signInOptions: SignInInputs): Promise<SignInResult> {
         return this.nativeAuthController.signIn(signInOptions);
     }
 
@@ -81,7 +81,7 @@ export class NativeAuthPublicClientApplication
      * @param signUpOptions - Options for the sign-up flow
      * @returns - A promise that resolves to SignUpResult
      */
-    signUp(signUpOptions: SignUpOptions): Promise<SignUpResult> {
+    signUp(signUpOptions: SignUpInputs): Promise<SignUpResult> {
         throw new Error(
             `Method not implemented with parameter ${signUpOptions}`
         );
@@ -93,7 +93,7 @@ export class NativeAuthPublicClientApplication
      * @returns - A promise that resolves to ResetPasswordStartResult
      */
     resetPassword(
-        resetPasswordOptions: ResetPasswordOptions
+        resetPasswordOptions: ResetPasswordInputs
     ): Promise<ResetPasswordStartResult> {
         throw new Error(
             `Method not implemented with parameter ${resetPasswordOptions}`

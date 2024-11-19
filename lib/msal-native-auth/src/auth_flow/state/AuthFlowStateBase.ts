@@ -5,7 +5,7 @@
 
 import { InvalidArgumentError } from "../../error/InvalidArgumentError.js";
 
-export abstract class HandlerBase {
+export abstract class AuthFlowStateBase {
     protected constructor(
         protected correlationId: string,
         protected continuationToken?: string

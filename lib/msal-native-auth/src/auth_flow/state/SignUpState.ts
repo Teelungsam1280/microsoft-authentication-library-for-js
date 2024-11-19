@@ -12,14 +12,14 @@ import {
     SignUpSubmitCodeResult,
     SignUpSubmitPasswordResult,
 } from "../result/SignUpResult.js";
-import { HandlerBase } from "./HandlerBase.js";
+import { AuthFlowStateBase } from "./AuthFlowStateBase.js";
 
 /*
- * Base handler for sign-up flow.
+ * Base state for sign-up flow.
  */
-abstract class SignUpHandler extends HandlerBase {
+abstract class SignUpState extends AuthFlowStateBase {
     /*
-     * Creates a new SignUpHandler.
+     * Creates a new SignUpState.
      * @param correlationId - The correlation ID for the request.
      * @param continuationToken - The continuation token for the request.
      * @param config - The configuration for the request.
@@ -44,9 +44,9 @@ abstract class SignUpHandler extends HandlerBase {
 }
 
 /*
- * Handler for sign-up operations that require a code.
+ * Sign-up state that requires a code.
  */
-export class SignUpCodeRequiredHandler extends SignUpHandler {
+export class SignUpCodeRequiredState extends SignUpState {
     /*
      * Submits a code for sign-up.
      * @param code - The code to submit.
@@ -74,9 +74,9 @@ export class SignUpCodeRequiredHandler extends SignUpHandler {
 }
 
 /*
- * Handler for sign-up operations that require a password.
+ * Sign-up state that requires a password.
  */
-export class SignUpPasswordRequiredHandler extends SignUpHandler {
+export class SignUpPasswordRequiredState extends SignUpState {
     /*
      * Submits a password for sign-up.
      * @param password - The password to submit.
@@ -96,9 +96,9 @@ export class SignUpPasswordRequiredHandler extends SignUpHandler {
 }
 
 /*
- * Handler for sign-up operations that require attributes.
+ * Sign-up state that requires attributes.
  */
-export class SignUpAttributesRequiredHandler extends SignUpHandler {
+export class SignUpAttributesRequiredState extends SignUpState {
     /*
      * Submits attributes for sign-up.
      * @param attributes - The attributes to submit.

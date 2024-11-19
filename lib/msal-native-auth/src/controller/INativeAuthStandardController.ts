@@ -9,11 +9,11 @@ import { ResetPasswordStartResult } from "../auth_flow/result/ResetPasswordResul
 import { SignInResult } from "../auth_flow/result/SignInResult.js";
 import { SignUpResult } from "../auth_flow/result/SignUpResult.js";
 import {
-    GetAccountOptions,
-    ResetPasswordOptions,
-    SignInOptions,
-    SignUpOptions,
-} from "../NativeAuthActionOptions.js";
+    GetAccountInputs,
+    ResetPasswordInputs,
+    SignInInputs,
+    SignUpInputs,
+} from "../NativeAuthActionInputs.js";
 
 /*
  * Controller interface for standard authentication operations.
@@ -25,7 +25,7 @@ export interface INativeAuthStardardController extends IController {
      * @returns - A promise that resolves to GetAccountResult
      */
     getCurrentAccount(
-        getAccountOptions: GetAccountOptions
+        getAccountOptions: GetAccountInputs
     ): Promise<GetAccountResult>;
 
     /*
@@ -33,14 +33,14 @@ export interface INativeAuthStardardController extends IController {
      * @param signInOptions - Options for signing in.
      * @returns The result of the operation.
      */
-    signIn(signInOptions: SignInOptions): Promise<SignInResult>;
+    signIn(signInOptions: SignInInputs): Promise<SignInResult>;
 
     /*
      * Signs the current user up.
      * @param signUpOptions - Options for signing up.
      * @returns The result of the operation.
      */
-    signUp(signUpOptions: SignUpOptions): Promise<SignUpResult>;
+    signUp(signUpOptions: SignUpInputs): Promise<SignUpResult>;
 
     /*
      * Resets the password for the current user.
@@ -48,6 +48,6 @@ export interface INativeAuthStardardController extends IController {
      * @returns The result of the operation.
      */
     resetPassword(
-        resetPasswordOptions: ResetPasswordOptions
+        resetPasswordOptions: ResetPasswordInputs
     ): Promise<ResetPasswordStartResult>;
 }

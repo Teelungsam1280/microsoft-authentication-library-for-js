@@ -10,14 +10,14 @@ import {
     ResetPasswordSubmitCodeResult,
     ResetPasswordSubmitPasswordResult,
 } from "../result/ResetPasswordResult.js";
-import { HandlerBase } from "./HandlerBase.js";
+import { AuthFlowStateBase } from "./AuthFlowStateBase.js";
 
 /*
- * Base handler for reset password operation.
+ * Base state for reset password operation.
  */
-abstract class ResetPasswordHandler extends HandlerBase {
+abstract class ResetPasswordState extends AuthFlowStateBase {
     /*
-     * Creates a new handler for reset password operation.
+     * Creates a new state for reset password operation.
      * @param correlationId - The correlationId for the request.
      * @param continuationToken - The continuation token for the request.
      * @param config - The configuration for the request.
@@ -42,9 +42,9 @@ abstract class ResetPasswordHandler extends HandlerBase {
 }
 
 /*
- * Handler for reset password operations that require a code.
+ * Reset password state that requires a code.
  */
-export class ResetPasswordCodeRequiredHandler extends ResetPasswordHandler {
+export class ResetPasswordCodeRequiredState extends ResetPasswordState {
     /*
      * Submits a code for reset password.
      * @param code - The code to submit.
@@ -72,9 +72,9 @@ export class ResetPasswordCodeRequiredHandler extends ResetPasswordHandler {
 }
 
 /*
- * Handler for reset password operations that require a password.
+ * Reset password state that requires a password.
  */
-export class ResetPasswordPasswordRequiredHandler extends ResetPasswordHandler {
+export class ResetPasswordPasswordRequiredState extends ResetPasswordState {
     /*
      * Submits a password for reset password.
      * @param password - The password to submit.

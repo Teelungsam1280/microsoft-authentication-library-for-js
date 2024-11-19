@@ -4,29 +4,29 @@
  */
 
 import {
-    SignUpAttributesRequiredHandler,
-    SignUpCodeRequiredHandler,
-    SignUpPasswordRequiredHandler,
-} from "../handler/SignUpHandler.js";
+    SignUpAttributesRequiredState,
+    SignUpCodeRequiredState,
+    SignUpPasswordRequiredState,
+} from "../state/SignUpState.js";
 import { ResultBase } from "./ResultBase.js";
-import { SignInContinuationHandler } from "../handler/SignInHandler.js";
+import { SignInContinuationState } from "../state/SignInState.js";
 
 /*
  * Result of a sign-up operation.
  */
 export class SignUpResult extends ResultBase<
     void,
-    | SignUpCodeRequiredHandler
-    | SignUpPasswordRequiredHandler
-    | SignUpAttributesRequiredHandler
-    | SignInContinuationHandler
+    | SignUpCodeRequiredState
+    | SignUpPasswordRequiredState
+    | SignUpAttributesRequiredState
+    | SignInContinuationState
 > {
     /*
      * Checks if the flow is completed.
      * @returns True if the flow is completed, false otherwise.
      */
     isFlowCompleted(): boolean {
-        return this.nextStateHandler instanceof SignInContinuationHandler;
+        return this.state instanceof SignInContinuationState;
     }
 }
 
@@ -50,5 +50,5 @@ export class SignUpSubmitAttributesResult extends SignUpResult {}
  */
 export class SignUpResendCodeResult extends ResultBase<
     void,
-    SignUpCodeRequiredHandler
+    SignUpCodeRequiredState
 > {}

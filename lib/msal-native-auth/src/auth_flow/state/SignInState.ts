@@ -14,14 +14,14 @@ import {
     SignInSubmitCodeResult,
     SignInSubmitPasswordResult,
 } from "../result/SignInResult.js";
-import { HandlerBase } from "./HandlerBase.js";
+import { AuthFlowStateBase } from "./AuthFlowStateBase.js";
 
 /*
- * Base handler for sign-in operations.
+ * Base state for sign-in flow.
  */
-abstract class SignInHandler extends HandlerBase {
+abstract class SignInState extends AuthFlowStateBase {
     /*
-     * Constructor for SignInHandler.
+     * Constructor for SignInState.
      * @param signInClient - The client to use for sign-in operations.
      * @param correlationId - The correlation ID for the request.
      * @param continuationToken - The continuation token for the sign-in operation.
@@ -52,9 +52,9 @@ abstract class SignInHandler extends HandlerBase {
 }
 
 /*
- * Handler for sign-in operations that require a code.
+ * Sign-in state which requires a code.
  */
-export class SignInCodeRequiredHandler extends SignInHandler {
+export class SignInCodeRequiredState extends SignInState {
     /*
      * Submits a code for sign-in.
      * @param code - The code to submit.
@@ -107,9 +107,9 @@ export class SignInCodeRequiredHandler extends SignInHandler {
 }
 
 /*
- * Handler for sign-in operations that require a password.
+ * Sign-in state that requires a password.
  */
-export class SignInPasswordRequiredHandler extends SignInHandler {
+export class SignInPasswordRequiredState extends SignInState {
     /*
      * Submits a password for sign-in.
      * @param password - The password to submit.
@@ -131,11 +131,11 @@ export class SignInPasswordRequiredHandler extends SignInHandler {
 }
 
 /*
- * Handler for sign-in operations that require a continuation token.
+ * Sign-in continuation state.
  */
-export class SignInContinuationHandler extends HandlerBase {
+export class SignInContinuationState extends AuthFlowStateBase {
     /*
-     * Constructor for SignInContinuationHandler.
+     * Constructor for SignInContinuationState.
      * @param correlationId - The correlation ID for the request.
      * @param continuationToken - The continuation token for the sign-in operation.
      * @param config - The configuration for the client.

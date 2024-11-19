@@ -4,18 +4,18 @@
  */
 
 import {
-    ResetPasswordCodeRequiredHandler,
-    ResetPasswordPasswordRequiredHandler,
-} from "../handler/ResetPasswordHandler.js";
+    ResetPasswordCodeRequiredState,
+    ResetPasswordPasswordRequiredState,
+} from "../state/ResetPasswordState.js";
 import { ResultBase } from "./ResultBase.js";
-import { SignInContinuationHandler } from "../handler/SignInHandler.js";
+import { SignInContinuationState } from "../state/SignInState.js";
 
 /*
  * Result of a reset password operation.
  */
 export class ResetPasswordStartResult extends ResultBase<
     void,
-    ResetPasswordCodeRequiredHandler
+    ResetPasswordCodeRequiredState
 > {}
 
 /*
@@ -23,7 +23,7 @@ export class ResetPasswordStartResult extends ResultBase<
  */
 export class ResetPasswordSubmitCodeResult extends ResultBase<
     void,
-    ResetPasswordPasswordRequiredHandler
+    ResetPasswordPasswordRequiredState
 > {}
 
 /*
@@ -31,7 +31,7 @@ export class ResetPasswordSubmitCodeResult extends ResultBase<
  */
 export class ResetPasswordSubmitPasswordResult extends ResultBase<
     void,
-    SignInContinuationHandler
+    SignInContinuationState
 > {
     /*
      * Checks if the flow is completed.
@@ -47,5 +47,5 @@ export class ResetPasswordSubmitPasswordResult extends ResultBase<
  */
 export class ResetPasswordResendCodeResult extends ResultBase<
     void,
-    ResetPasswordCodeRequiredHandler
+    ResetPasswordCodeRequiredState
 > {}

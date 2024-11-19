@@ -4,9 +4,9 @@
  */
 
 import {
-    SignInCodeRequiredHandler,
-    SignInPasswordRequiredHandler,
-} from "../handler/SignInHandler.js";
+    SignInCodeRequiredState,
+    SignInPasswordRequiredState,
+} from "../state/SignInState.js";
 import { AccountInfo } from "../data/AccountInfo.js";
 import { ResultBase } from "./ResultBase.js";
 
@@ -15,7 +15,7 @@ import { ResultBase } from "./ResultBase.js";
  */
 export class SignInResult extends ResultBase<
     AccountInfo,
-    SignInCodeRequiredHandler | SignInPasswordRequiredHandler
+    SignInCodeRequiredState | SignInPasswordRequiredState
 > {}
 
 /*
@@ -41,9 +41,9 @@ export class SignInSubmitPasswordResult extends ResultBase<AccountInfo> {
  */
 export class SignInResendCodeResult extends ResultBase<
     void,
-    SignInCodeRequiredHandler
+    SignInCodeRequiredState
 > {
-    constructor(nextStateHandler?: SignInCodeRequiredHandler) {
+    constructor(nextStateHandler?: SignInCodeRequiredState) {
         super(undefined, nextStateHandler);
     }
 }

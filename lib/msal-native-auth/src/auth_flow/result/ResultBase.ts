@@ -5,31 +5,25 @@
 
 import { NativeAuthError } from "../../error/NativeAuthError.js";
 import { UnexpectedError } from "../../error/UnexpectedError.js";
-import { HandlerBase } from "../handler/HandlerBase.js";
+import { AuthFlowStateBase } from "../state/AuthFlowStateBase.js";
 
 /*
  * Base class for a result of an authentication operation.
- * @typeParam TResult - The type of the result data.
- * @typeParam THandler - The type of the next state handler.
+ * @typeParam TState - The type of the result data.
+ * @typeParam TState - The type of state.
  */
 export abstract class ResultBase<
-    TResult = void,
-    THandler extends HandlerBase | void = void
+    TData = void,
+    TState extends AuthFlowStateBase | void = void
 > {
     /*
      *constructor for ResultBase
-     * @param resultData - The result data.
-     * @param nextStateHandler - The next state handler.
-     * @typeParam TResult - The type of the result data.
-     * @typeParam THandler - The type of the next state handler.
+     * @param data - The result data.
+     * @param state - The state.
+     * @typeParam TData - The type of the result data.
+     * @typeParam TState - The type of state.
      */
-    constructor(
-        public resultData?: TResult,
-        public nextStateHandler?: THandler
-    ) {
-        this.resultData = resultData;
-        this.nextStateHandler = nextStateHandler;
-    }
+    constructor(public data?: TData, public state?: TState) {}
 
     /*
      * The error that occurred during the authentication operation.
@@ -40,14 +34,14 @@ export abstract class ResultBase<
      * Creates a result with an error.
      * @param error - The error that occurred.
      * @returns The result.
-     * @typeParam TResult - The type of the result data.
-     * @typeParam THandler - The type of the next state handler.
+     * @typeParam TData - The type of the result data.
+     * @typeParam TState - The type of state.
      * @typeParam TActionResult - The type of the result.
      */
     static createWithError<
-        TResult,
-        THandler extends HandlerBase | void,
-        TActionResult extends ResultBase<TResult, THandler>
+        TData,
+        TState extends AuthFlowStateBase | void,
+        TActionResult extends ResultBase<TData, TState>
     >(this: new () => TActionResult, error: unknown): TActionResult {
         let nativeAuthError: NativeAuthError;
 
@@ -75,6 +69,6 @@ export abstract class ResultBase<
      * @returns True if the flow is completed, false otherwise.
      */
     isFlowCompleted(): boolean {
-        return !this.resultData;
+        return !this.data;
     }
 }
