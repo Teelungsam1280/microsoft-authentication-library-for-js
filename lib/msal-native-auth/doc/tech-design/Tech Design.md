@@ -29,24 +29,24 @@ npm install msal-native-auth-ex
 ```javascript
 // In CIAM developer's app.
 
-// Create a "NativePublicExClientApplication".
+// Create a global varialble "NativePublicExClientApplication".
 const app = NativeAuthPublicClientApplication.create(config);
 
+// In the SignIn Initial UI
 async function handleSignIn(event) {
-    // Developer builds their own UX for user to enter username/credentials now.
-    const email = document.getElementById("email").value;
+    const username = document.getElementById("username").value;
 
     const signInOptions: SignInOptions = {
         username: username,
     };
 
-    const signInResult = await app.signIn(signInOptions);
+    const result = await app.signIn(signInOptions);
 
-    // Handling the error if the signin is failed
-    if (!signInResult.isSuccess) {
-        // Check the errr type and handle error
+    // Handling the error if the action is failed
+    if (!result.isSuccess) {
+        // Check the error type and handle error
 
-        if (signInResult.error instanceof UserNotFoundError) {
+        if (result.error instanceof UserNotFoundError) {
             // Handle user not found error
         } else {
             // Handle unexpected error
@@ -55,43 +55,47 @@ async function handleSignIn(event) {
         return;
     }
 
-    const accountInfo: AccountInfo | undefined;
+    switch (result.state) {
+        case SignInState.Completed:
+            accountInfo = result.data;
+            const accessToken = await accountInfo.getAccessToken();
+            fetchProfile(accessToken);
+        case SignInState.CodeRequired:
+            navigateToCodeEntryView(result.stateHandler);
+        case SignInState.PasswordRequired:
+            navigateToPasswordEntryView(result.stateHandler);
+    }
+}
 
-    if (signInResult.isFlowCompleted()) {
-        accountInfo = signInResult.resultData;
-    } else {
-        if (signInResult.nextStateHandler instanceof SignInCodeRequiredHandler) {
-            // Code is required.
-            // Collect code from customer.
-            const code = "test-code";
-            const submitCodeResult = await signInResult.nextStateHandler.submitCode(code);
+// In the Code Entry UI
+async function submitCode(handler: SignInCodeRequiredStateHandler) {
+    const code = document.getElementById("code").value;
 
-            if (!submitCodeResult.isSuccess) {
-                // Handle error
+    const result = handler.submitCode(code);
 
-                return;
-            }
-
-            accountInfo = submitCodeResult.resultData;
-        } else if (signInResult.nextStateHandler instanceof SignInPasswordRequiredHandler) {
-            // password required
-            // collect password from customer.
-            const pwd = "test-password";
-            const submitPasswordResult =
-                await signInResult.nextStateHandler.sumbmitPassword(pwd);
-
-            if (!submitPasswordResult.isSuccess) {
-                // handle error
-
-                return;
-            }
-
-            accountInfo = submitPasswordResult.resultData;
-        }
+    // Handling the error if the action is failed
+    if (!result.isSuccess) {
+        return;
     }
 
+    accountInfo = result.data;
     const accessToken = await accountInfo.getAccessToken();
+    fetchProfile(accessToken);
+}
 
+// In the Password Entry UI
+async function submitPassword(handler: SignInPasswordRequiredStateHandler) {
+    const password = document.getElementById("password").value;
+
+    const result = handler.submitPassword(password);
+
+    // Handling the error if the action is failed
+    if (!result.isSuccess) {
+        return;
+    }
+
+    accountInfo = result.data;
+    const accessToken = await accountInfo.getAccessToken();
     fetchProfile(accessToken);
 }
 ```
