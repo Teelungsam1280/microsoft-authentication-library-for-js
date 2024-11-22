@@ -21,33 +21,33 @@ import {
 export interface INativeAuthStardardController extends IController {
     /*
      * Gets the current account from the cache.
-     * @param getAccountOptions - Options for getting the current cached account
+     * @param getAccountInputs - Inputs for getting the current cached account
      * @returns - A promise that resolves to GetAccountResult
      */
     getCurrentAccount(
-        getAccountOptions: GetAccountInputs
+        getAccountInputs: GetAccountInputs
     ): Promise<GetAccountResult>;
 
     /*
      * Signs the current user out.
-     * @param signInOptions - Options for signing in.
+     * @param signInInputs - Inputs for signing in.
      * @returns The result of the operation.
      */
-    signIn(signInOptions: SignInInputs): Promise<SignInResult>;
+    signIn(signInInputs: SignInInputs): Promise<SignInResult>;
 
     /*
      * Signs the current user up.
-     * @param signUpOptions - Options for signing up.
+     * @param signUpInputs - Inputs for signing up.
      * @returns The result of the operation.
      */
-    signUp(signUpOptions: SignUpInputs): Promise<SignUpResult>;
+    signUp(signUpInputs: SignUpInputs): Promise<SignUpResult>;
 
     /*
      * Resets the password for the current user.
-     * @param resetPasswordOptions - Options for resetting the password.
+     * @param resetPasswordInputs - Inputs for resetting the password.
      * @returns The result of the operation.
      */
     resetPassword(
-        resetPasswordOptions: ResetPasswordInputs
+        resetPasswordInputs: ResetPasswordInputs
     ): Promise<ResetPasswordStartResult>;
 }

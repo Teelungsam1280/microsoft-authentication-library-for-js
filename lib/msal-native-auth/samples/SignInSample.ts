@@ -25,11 +25,11 @@ export async function signin(
 
     const app = NativeAuthPublicClientApplication.create(config);
 
-    const signInOptions: SignInInputs = {
+    const signInInputs: SignInInputs = {
         username: username,
     };
 
-    const result = await app.signIn(signInOptions);
+    const result = await app.signIn(signInInputs);
 
     switch (result.state) {
         case SignInState.Completed:

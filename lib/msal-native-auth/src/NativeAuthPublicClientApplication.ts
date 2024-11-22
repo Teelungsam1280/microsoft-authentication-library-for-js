@@ -56,47 +56,47 @@ export class NativeAuthPublicClientApplication
 
     /*
      * Gets the current account from the cache.
-     * @param getAccountOptions - Options for getting the current cached account
+     * @param getAccountInputs - Inputs for getting the current cached account
      * @returns - A promise that resolves to GetAccountResult
      */
     getCurrentAccount(
-        getAccountOptions: GetAccountInputs
+        getAccountInputs: GetAccountInputs
     ): Promise<GetAccountResult> {
         throw new Error(
-            `Method not implemented with parameter ${getAccountOptions}`
+            `Method not implemented with parameter ${getAccountInputs}`
         );
     }
 
     /*
      * Initiates the sign-in flow.
-     * @param signInOptions - Options for the sign-in flow
+     * @param signInInputs - Inputs for the sign-in flow
      * @returns - A promise that resolves to SignInResult
      */
-    signIn(signInOptions: SignInInputs): Promise<SignInResult> {
-        return this.nativeAuthController.signIn(signInOptions);
+    signIn(signInInputs: SignInInputs): Promise<SignInResult> {
+        return this.nativeAuthController.signIn(signInInputs);
     }
 
     /*
      * Initiates the sign-up flow.
-     * @param signUpOptions - Options for the sign-up flow
+     * @param signUpInputs - Inputs for the sign-up flow
      * @returns - A promise that resolves to SignUpResult
      */
-    signUp(signUpOptions: SignUpInputs): Promise<SignUpResult> {
+    signUp(signUpInputs: SignUpInputs): Promise<SignUpResult> {
         throw new Error(
-            `Method not implemented with parameter ${signUpOptions}`
+            `Method not implemented with parameter ${signUpInputs}`
         );
     }
 
     /*
      * Initiates the reset password flow.
-     * @param resetPasswordOptions - Options for the reset password flow
+     * @param resetPasswordInputs - Inputs for the reset password flow
      * @returns - A promise that resolves to ResetPasswordStartResult
      */
     resetPassword(
-        resetPasswordOptions: ResetPasswordInputs
+        resetPasswordInputs: ResetPasswordInputs
     ): Promise<ResetPasswordStartResult> {
         throw new Error(
-            `Method not implemented with parameter ${resetPasswordOptions}`
+            `Method not implemented with parameter ${resetPasswordInputs}`
         );
     }
 }

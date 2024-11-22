@@ -17,33 +17,33 @@ import {
 export interface INativeAuthPublicClientApplication {
     /*
      * Gets the current account from the cache.
-     * @param getAccountInputss - Inputss for getting the current cached account
+     * @param getAccountInputs - Inputs for getting the current cached account
      * @returns - A promise that resolves to GetAccountResult
      */
     getCurrentAccount(
-        getAccountInputss: GetAccountInputs
+        getAccountInputs: GetAccountInputs
     ): Promise<GetAccountResult>;
 
     /*
      * Initiates the sign-in flow.
-     * @param signInInputss - Inputss for the sign-in flow
+     * @param signInInputs - Inputs for the sign-in flow
      * @returns - A promise that resolves to SignInResult
      */
-    signIn(signInInputss: SignInInputs): Promise<SignInResult>;
+    signIn(signInInputs: SignInInputs): Promise<SignInResult>;
 
     /*
      * Initiates the sign-up flow.
-     * @param signUpInputss - Inputss for the sign-up flow
+     * @param signUpInputs - Inputs for the sign-up flow
      * @returns - A promise that resolves to SignUpResult
      */
-    signUp(signUpInputss: SignUpInputs): Promise<SignUpResult>;
+    signUp(signUpInputs: SignUpInputs): Promise<SignUpResult>;
 
     /*
      * Initiates the reset password flow.
-     * @param resetPasswordInputss - Inputss for the reset password flow
+     * @param resetPasswordInputs - Inputs for the reset password flow
      * @returns - A promise that resolves to ResetPasswordStartResult
      */
     resetPassword(
-        resetPasswordInputss: ResetPasswordInputs
+        resetPasswordInputs: ResetPasswordInputs
     ): Promise<ResetPasswordStartResult>;
 }

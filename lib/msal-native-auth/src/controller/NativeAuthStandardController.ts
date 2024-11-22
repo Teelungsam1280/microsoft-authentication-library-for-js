@@ -67,13 +67,13 @@ export class NativeAuthStandardController
 
     /*
      * Gets the current account from the cache.
-     * @param getAccountOptions - Options for getting the current cached account
+     * @param getAccountInputs - Inputs for getting the current cached account
      * @returns - A promise that resolves to GetAccountResult
      */
     async getCurrentAccount(
-        getAccountOptions: GetAccountInputs
+        getAccountInputs: GetAccountInputs
     ): Promise<GetAccountResult> {
-        const correlationId = this.getCorrelationId(getAccountOptions);
+        const correlationId = this.getCorrelationId(getAccountInputs);
 
         throw new Error(
             `Method not implemented with Parameter ${correlationId}.`
@@ -82,13 +82,13 @@ export class NativeAuthStandardController
 
     /*
      * Signs the user in.
-     * @param signInOptions - Options for signing in the user.
+     * @param signInInputs - Inputs for signing in the user.
      * @returns The result of the operation.
      */
-    async signIn(signInOptions: SignInInputs): Promise<SignInResult> {
-        const correlationId = this.getCorrelationId(signInOptions);
+    async signIn(signInInputs: SignInInputs): Promise<SignInResult> {
+        const correlationId = this.getCorrelationId(signInInputs);
 
-        if (!signInOptions.username) {
+        if (!signInInputs.username) {
             return Promise.resolve(
                 SignInResult.createWithError(
                     new InvalidArgumentError("username", correlationId)
@@ -110,9 +110,9 @@ export class NativeAuthStandardController
                 this.config.auth.clientId,
                 correlationId,
                 this.nativeAuthConfig.nativeAuth.challengeTypes ?? [],
-                signInOptions.scopes ?? [],
-                signInOptions.username,
-                signInOptions.password
+                signInInputs.scopes ?? [],
+                signInInputs.username,
+                signInInputs.password
             );
 
             const startResult = await this.signInClient.start(
@@ -121,7 +121,7 @@ export class NativeAuthStandardController
 
             if (startResult instanceof SignInWithContinuationTokenResult) {
                 // require password
-                if (!signInOptions.password) {
+                if (!signInInputs.password) {
                     return new SignInResult(
                         undefined,
                         new SignInPasswordRequiredStateHandler(
@@ -129,7 +129,7 @@ export class NativeAuthStandardController
                             correlationId,
                             startResult.continuationToken,
                             this.nativeAuthConfig,
-                            signInOptions.scopes
+                            signInInputs.scopes
                         )
                     );
                 }
@@ -141,9 +141,9 @@ export class NativeAuthStandardController
                         this.config.auth.clientId,
                         correlationId,
                         this.nativeAuthConfig.nativeAuth.challengeTypes ?? [],
-                        signInOptions.scopes ?? [],
+                        signInInputs.scopes ?? [],
                         startResult.continuationToken,
-                        signInOptions.password
+                        signInInputs.password
                     );
 
                 const completedResult = await this.signInClient.submitPassword(
@@ -166,7 +166,7 @@ export class NativeAuthStandardController
                         correlationId,
                         startResult.continuationToken,
                         this.nativeAuthConfig,
-                        signInOptions.scopes
+                        signInInputs.scopes
                     )
                 );
             } else {
@@ -179,13 +179,13 @@ export class NativeAuthStandardController
 
     /*
      * Signs the user up.
-     * @param signUpOptions - Options for signing up the user.
+     * @param signUpInputs - Inputs for signing up the user.
      * @returns The result of the operation
      */
-    async signUp(signUpOptions: SignUpInputs): Promise<SignUpResult> {
-        const correlationId = this.getCorrelationId(signUpOptions);
+    async signUp(signUpInputs: SignUpInputs): Promise<SignUpResult> {
+        const correlationId = this.getCorrelationId(signUpInputs);
 
-        if (!signUpOptions.username) {
+        if (!signUpInputs.username) {
             return Promise.resolve(
                 SignUpResult.createWithError(
                     new InvalidArgumentError("username", correlationId)
@@ -200,15 +200,15 @@ export class NativeAuthStandardController
 
     /*
      * Resets the user's password.
-     * @param resetPasswordOptions - Options for resetting the user's password.
+     * @param resetPasswordInputs - Inputs for resetting the user's password.
      * @returns The result of the operation.
      */
     async resetPassword(
-        resetPasswordOptions: ResetPasswordInputs
+        resetPasswordInputs: ResetPasswordInputs
     ): Promise<ResetPasswordStartResult> {
-        const correlationId = this.getCorrelationId(resetPasswordOptions);
+        const correlationId = this.getCorrelationId(resetPasswordInputs);
 
-        if (!resetPasswordOptions.username) {
+        if (!resetPasswordInputs.username) {
             return Promise.resolve(
                 ResetPasswordStartResult.createWithError(
                     new InvalidArgumentError("username", correlationId)
@@ -221,9 +221,7 @@ export class NativeAuthStandardController
         );
     }
 
-    private getCorrelationId(actionOptions: NativeAuthActionInputs): string {
-        return (
-            actionOptions.correlationId || this.browserCrypto.createNewGuid()
-        );
+    private getCorrelationId(actionInputs: NativeAuthActionInputs): string {
+        return actionInputs.correlationId || this.browserCrypto.createNewGuid();
     }
 }

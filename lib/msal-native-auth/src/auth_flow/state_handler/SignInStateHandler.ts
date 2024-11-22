@@ -17,7 +17,7 @@ import {
 import { AuthFlowStateHandlerBase } from "./AuthFlowStateHandlerBase.js";
 
 /*
- * Base state for sign-in flow.
+ * Base state handler for sign-in flow.
  */
 abstract class SignInStateHandler extends AuthFlowStateHandlerBase {
     /*

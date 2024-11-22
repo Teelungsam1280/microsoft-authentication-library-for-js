@@ -36,11 +36,11 @@ const app = NativeAuthPublicClientApplication.create(config);
 async function handleSignIn(event) {
     const username = document.getElementById("username").value;
 
-    const signInOptions: SignInOptions = {
+    const signInInputs: SignInInputs = {
         username: username,
     };
 
-    const result = await app.signIn(signInOptions);
+    const result = await app.signIn(signInInputs);
 
     switch (result.state) {
         case SignInState.Completed:
@@ -255,34 +255,34 @@ export class NativeAuthPublicClientApplication
 
     /*
      * Gets the current account from the cache.
-     * @param getAccountOptions - Options for getting the current cached account
+     * @param getAccountInputs - Inputs for getting the current cached account
      * @returns - A promise that resolves to GetAccountResult
      */
     getCurrentAccount(
-        getAccountOptions: GetAccountOptions
+        getAccountInputs: GetAccountInputs
     ): Promise<GetAccountResult> {}
 
     /*
      * Initiates the sign-in flow.
-     * @param signInOptions - Options for the sign-in flow
+     * @param signInInputs - Inputs for the sign-in flow
      * @returns - A promise that resolves to SignInResult
      */
-    signIn(signInOptions: SignInOptions): Promise<SignInResult> {}
+    signIn(signInInputs: SignInInputs): Promise<SignInResult> {}
 
     /*
      * Initiates the sign-up flow.
-     * @param signUpOptions - Options for the sign-up flow
+     * @param signUpInputs - Inputs for the sign-up flow
      * @returns - A promise that resolves to SignUpResult
      */
-    signUp(signUpOptions: SignUpOptions): Promise<SignUpResult> {}
+    signUp(signUpInputs: SignUpInputs): Promise<SignUpResult> {}
 
     /*
      * Initiates the reset password flow.
-     * @param resetPasswordOptions - Options for the reset password flow
+     * @param resetPasswordInputs - Inputs for the reset password flow
      * @returns - A promise that resolves to ResetPasswordStartResult
      */
     resetPassword(
-        resetPasswordOptions: ResetPasswordOptions
+        resetPasswordInputs: ResetPasswordInputs
     ): Promise<ResetPasswordStartResult> {}
 }
 ```
@@ -291,49 +291,97 @@ export class NativeAuthPublicClientApplication
 
 ```ts
 /*
+ * Base class for a result of an authentication operation.
+ * @typeParam TState - The type of the result data.
+ * @typeParam TStateHandler - The type of state handler.
+ */
+export abstract class ResultBase<
+    TState,
+    TData = void,
+    TStateHandler extends AuthFlowStateHandlerBase | void = void
+> {
+    /*
+     * The state of the authentication operation.
+     */
+    protected _state?: TState;
+
+    /*
+     *constructor for ResultBase
+     * @param data - The result data.
+     * @param state - The state.
+     * @typeParam TData - The type of the result data.
+     * @typeParam TState - The type of state.
+     */
+    constructor(public data?: TData, public stateHandler?: TStateHandler) {}
+
+    /*
+     * The error that occurred during the authentication operation.
+     */
+    error?: NativeAuthError;
+
+    /*
+     * Gets current state of the authentication operation.
+     */
+    abstract get state(): TState;
+
+    /*
+     * Creates a result with an error.
+     * @param error - The error that occurred.
+     * @returns The result.
+     * @typeParam TData - The type of the result data.
+     * @typeParam TState - The type of state.
+     * @typeParam TActionResult - The type of the result.
+     */
+    static createWithError<
+        TData,
+        TStateHandler extends AuthFlowStateHandlerBase | void,
+        TState,
+        TActionResult extends ResultBase<TState, TData, TStateHandler>
+    >(this: new () => TActionResult, error: unknown): TActionResult {}
+}
+
+/*
  * Result of a sign-in operation.
  */
 export class SignInResult extends ResultBase<
+    SignInState,
     AccountInfo,
-    SignInCodeRequiredHandler | SignInPasswordRequiredHandler
+    SignInCodeRequiredStateHandler | SignInPasswordRequiredStateHandler
 > {}
 
 /*
- * Result of a sign-in operation that requires a code.
+ * Result of a sign-in submit credential operation.
  */
-export class SignInSubmitCodeResult extends ResultBase<AccountInfo> {
-    constructor(resultData?: AccountInfo) {
-        super(resultData);
-    }
-}
+abstract class SignInSubmitCredentialResult extends ResultBase<
+    SignInState,
+    AccountInfo
+> {}
 
 /*
- * Result of a sign-in operation that requires a password.
+ * Result of a sign-in submit code operation.
  */
-export class SignInSubmitPasswordResult extends ResultBase<AccountInfo> {
-    constructor(resultData?: AccountInfo) {
-        super(resultData);
-    }
-}
+export class SignInSubmitCodeResult extends SignInSubmitCredentialResult {}
+
+/*
+ * Result of a sign-in submit password operation.
+ */
+export class SignInSubmitPasswordResult extends SignInSubmitCredentialResult {}
 
 /*
  * Result of resending code in a sign-in operation.
  */
 export class SignInResendCodeResult extends ResultBase<
+    SignInState,
     void,
-    SignInCodeRequiredHandler
-> {
-    constructor(nextStateHandler?: SignInCodeRequiredHandler) {
-        super(undefined, nextStateHandler);
-    }
-}
+    SignInCodeRequiredStateHandler
+> {}
 
 /*
- * Base handler for sign-in operations.
+ * Base state handler for sign-in flow.
  */
-abstract class SignInHandler extends HandlerBase {
+abstract class SignInStateHandler extends AuthFlowStateHandlerBase {
     /*
-     * Constructor for SignInHandler.
+     * Constructor for SignInStateHandler.
      * @param signInClient - The client to use for sign-in operations.
      * @param correlationId - The correlation ID for the request.
      * @param continuationToken - The continuation token for the sign-in operation.
@@ -352,7 +400,7 @@ abstract class SignInHandler extends HandlerBase {
 /*
  * Handler for sign-in operations that require a code.
  */
-export class SignInCodeRequiredHandler extends SignInHandler {
+export class SignInCodeRequiredStateHandler extends SignInStateHandler {
     /*
      * Submits a code for sign-in.
      * @param code - The code to submit.
@@ -370,7 +418,7 @@ export class SignInCodeRequiredHandler extends SignInHandler {
 /*
  * Handler for sign-in operations that require a password.
  */
-export class SignInPasswordRequiredHandler extends SignInHandler {
+export class SignInPasswordRequiredStateHandler extends SignInStateHandler {
     /*
      * Submits a password for sign-in.
      * @param password - The password to submit.
@@ -384,21 +432,7 @@ export class SignInPasswordRequiredHandler extends SignInHandler {
 /*
  * Handler for sign-in operations that require a continuation token.
  */
-export class SignInContinuationHandler extends HandlerBase {
-    /*
-     * Constructor for SignInContinuationHandler.
-     * @param correlationId - The correlation ID for the request.
-     * @param continuationToken - The continuation token for the sign-in operation.
-     * @param config - The configuration for the client.
-     * @param username - The username for the sign-in operation.
-     */
-    constructor(
-        correlationId: string,
-        continuationToken: string,
-        private config: NativeAuthConfiguration,
-        private username: string
-    ) {}
-
+export class SignInContinuationStateHandler extends AuthFlowStateHandlerBase {
     /*
      * Initiates the sign-in flow with continuation token.
      * @param scopes - The scopes to request during sign-in.
@@ -415,16 +449,13 @@ export class SignInContinuationHandler extends HandlerBase {
  * Result of a sign-up operation.
  */
 export class SignUpResult extends ResultBase<
+    SignUpState,
     void,
-    | SignUpCodeRequiredHandler
-    | SignUpPasswordRequiredHandler
-    | SignUpAttributesRequiredHandler
-    | SignInContinuationHandler
-> {
-    isFlowCompleted(): boolean {
-        return this.nextStateHandler instanceof SignInContinuationHandler;
-    }
-}
+    | SignUpCodeRequiredStateHandler
+    | SignUpPasswordRequiredStateHandler
+    | SignUpAttributesRequiredStateHandler
+    | SignInContinuationStateHandler
+> {}
 
 /*
  * Result of a sign-up operation that requires a code.
@@ -445,16 +476,17 @@ export class SignUpSubmitAttributesResult extends SignUpResult {}
  * Result of resending code in a sign-up operation.
  */
 export class SignUpResendCodeResult extends ResultBase<
+    SignUpState,
     void,
-    SignUpCodeRequiredHandler
+    SignUpCodeRequiredStateHandler
 > {}
 
 /*
- * Base handler for sign-up flow.
+ * Base state handler for sign-up flow.
  */
-abstract class SignUpHandler extends HandlerBase {
+abstract class SignUpStateHandler extends AuthFlowStateHandlerBase {
     /*
-     * Creates a new SignUpHandler.
+     * Creates a new SignUpStateHandler.
      * @param correlationId - The correlation ID for the request.
      * @param continuationToken - The continuation token for the request.
      * @param config - The configuration for the request.
@@ -469,45 +501,47 @@ abstract class SignUpHandler extends HandlerBase {
 }
 
 /*
- * Handler for sign-up operations that require a code.
+ * Sign-up handler used for the state of code required.
  */
-export class SignUpCodeRequiredHandler extends SignUpHandler {
+export class SignUpCodeRequiredStateHandler extends SignUpStateHandler {
     /*
      * Submits a code for sign-up.
      * @param code - The code to submit.
      * @returns The result of the operation.
      */
-    submitCode(code: string): Promise<SignUpSubmitCodeResult> {}
+    async submitCode(code: string): Promise<SignUpSubmitCodeResult> {}
 
     /*
      * Resends a code for sign-up.
      * @returns The result of the operation.
      */
-    resendCode(): Promise<SignUpResendCodeResult> {}
+    async resendCode(): Promise<SignUpResendCodeResult> {}
 }
 
 /*
- * Handler for sign-up operations that require a password.
+ * Sign-up handler used for the state of password required.
  */
-export class SignUpPasswordRequiredHandler extends SignUpHandler {
+export class SignUpPasswordRequiredStateHandler extends SignUpStateHandler {
     /*
      * Submits a password for sign-up.
      * @param password - The password to submit.
      * @returns The result of the operation.
      */
-    sumbmitPassword(password: string): Promise<SignUpSubmitPasswordResult> {}
+    async sumbmitPassword(
+        password: string
+    ): Promise<SignUpSubmitPasswordResult> {}
 }
 
 /*
- * Handler for sign-up operations that require attributes.
+ * Sign-up handler used for the state of attributes required.
  */
-export class SignUpAttributesRequiredHandler extends SignUpHandler {
+export class SignUpAttributesRequiredStateHandler extends SignUpStateHandler {
     /*
      * Submits attributes for sign-up.
      * @param attributes - The attributes to submit.
      * @returns The result of the operation.
      */
-    sumbmitAttributes(
+    async sumbmitAttributes(
         attributes: UserAccountAttributes
     ): Promise<SignUpSubmitAttributesResult> {}
 }
@@ -520,48 +554,44 @@ export class SignUpAttributesRequiredHandler extends SignUpHandler {
  * Result of a reset password operation.
  */
 export class ResetPasswordStartResult extends ResultBase<
+    ResetPasswordState,
     void,
-    ResetPasswordCodeRequiredHandler
+    ResetPasswordCodeRequiredStateHandler
 > {}
 
 /*
  * Result of a reset password operation that requires a code.
  */
 export class ResetPasswordSubmitCodeResult extends ResultBase<
+    ResetPasswordState,
     void,
-    ResetPasswordPasswordRequiredHandler
+    ResetPasswordPasswordRequiredStateHandler
 > {}
 
 /*
  * Result of a reset password operation that requires a password.
  */
 export class ResetPasswordSubmitPasswordResult extends ResultBase<
+    ResetPasswordState,
     void,
-    SignInContinuationHandler
-> {
-    /*
-     * Checks if the flow is completed.
-     * @returns True if the flow is completed, false otherwise.
-     */
-    isFlowCompleted(): boolean {
-        return true;
-    }
-}
+    SignInContinuationStateHandler
+> {}
 
 /*
  * Result of resending code in a reset password operation.
  */
 export class ResetPasswordResendCodeResult extends ResultBase<
+    ResetPasswordState,
     void,
-    ResetPasswordCodeRequiredHandler
+    ResetPasswordCodeRequiredStateHandler
 > {}
 
 /*
- * Base handler for reset password operation.
+ * Base state handler for reset password operation.
  */
-abstract class ResetPasswordHandler extends HandlerBase {
+abstract class ResetPasswordStateHandler extends AuthFlowStateHandlerBase {
     /*
-     * Creates a new handler for reset password operation.
+     * Creates a new state for reset password operation.
      * @param correlationId - The correlationId for the request.
      * @param continuationToken - The continuation token for the request.
      * @param config - The configuration for the request.
@@ -576,33 +606,33 @@ abstract class ResetPasswordHandler extends HandlerBase {
 }
 
 /*
- * Handler for reset password operations that require a code.
+ * Reset password handler for the state of code required.
  */
-export class ResetPasswordCodeRequiredHandler extends ResetPasswordHandler {
+export class ResetPasswordCodeRequiredStateHandler extends ResetPasswordStateHandler {
     /*
      * Submits a code for reset password.
      * @param code - The code to submit.
      * @returns The result of the operation.
      */
-    submitCode(code: string): Promise<ResetPasswordSubmitCodeResult> {}
+    async submitCode(code: string): Promise<ResetPasswordSubmitCodeResult> {}
 
     /*
      * Resends a code for reset password.
      * @returns The result of the operation.
      */
-    resendCode(): Promise<ResetPasswordResendCodeResult> {}
+    async resendCode(): Promise<ResetPasswordResendCodeResult> {}
 }
 
 /*
- * Handler for reset password operations that require a password.
+ * Reset password handler for the state of password required.
  */
-export class ResetPasswordPasswordRequiredHandler extends ResetPasswordHandler {
+export class ResetPasswordPasswordRequiredStateHandler extends ResetPasswordStateHandler {
     /*
      * Submits a password for reset password.
      * @param password - The password to submit.
      * @returns The result of the operation.
      */
-    sumbmitPassword(
+    async sumbmitPassword(
         password: string
     ): Promise<ResetPasswordSubmitPasswordResult> {}
 }
@@ -614,7 +644,10 @@ export class ResetPasswordPasswordRequiredHandler extends ResetPasswordHandler {
 /*
  * Result of getting an account.
  */
-export class GetAccountResult extends ResultBase<AccountInfo> {}
+export class GetAccountResult extends ResultBase<
+    GetAccountState,
+    AccountInfo
+> {}
 
 /*
  * Account information.
@@ -681,20 +714,15 @@ export class AccountInfo {
 /*
  * Result of getting an access token.
  */
-export class GetAccessTokenResult extends ResultBase<AuthenticationResult> {}
+export class GetAccessTokenResult extends ResultBase<
+    GetAccessTokenState,
+    AuthenticationResult
+> {}
 
 /*
  * Result of a sign-out operation.
  */
-export class SignOutResult extends ResultBase<void, void> {
-    /*
-     * Checks if the flow is completed.
-     * @returns True if the flow is completed, false otherwise.
-     */
-    isFlowCompleted(): boolean {
-        return true;
-    }
-}
+export class SignOutResult extends ResultBase<SignOutState, void, void> {}
 ```
 
 #### Native Auth Standard Controller
@@ -709,15 +737,15 @@ These classes will function as the core layer responsible for interacting direct
 
 The Native Auth API Client functions as the network layer for connecting with Native Auth endpoints. Each request handler within this client returns responses that the Interaction Client uses to generate action results for the controller.
 
-##### Sign in Sequence
+##### Sign in API calls Sequence
 
 ![Sign-In Seqence Diagram](signin-seq.png)
 
-##### Sign up Sequence
+##### Sign up API calls Sequence
 
 ![Sign-Up Sequence Diagram](signup-seq.png)
 
-##### Self Service Password Reset Sequence
+##### Self Service Password Reset API calls Sequence
 
 ![Reset-Password Sequence Diagram](password-reset-seq.png)
 
@@ -824,4 +852,4 @@ endpoints needed for the newly added ESTS APIs. You'll see the POC patch works a
 
 MSAL-Browser considers talking wo WAM NativeAuthentication. We need to name our stuff differently internally.
 
-> We need to find a new pattern to name our classes in the MSAL for JS repo (e.g., NativeAuthEx).
+> We need to find a new pattern to name our classes in the MSAL for JS repo. For example: NativeAuthEx* or CustomAuth*
