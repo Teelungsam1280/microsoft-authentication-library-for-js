@@ -42,19 +42,6 @@ async function handleSignIn(event) {
 
     const result = await app.signIn(signInOptions);
 
-    // Handling the error if the action is failed
-    if (!result.isSuccess) {
-        // Check the error type and handle error
-
-        if (result.error instanceof UserNotFoundError) {
-            // Handle user not found error
-        } else {
-            // Handle unexpected error
-        }
-
-        return;
-    }
-
     switch (result.state) {
         case SignInState.Completed:
             // read the account info from result by result.data and use it to get account data, tokens, and sign out.
