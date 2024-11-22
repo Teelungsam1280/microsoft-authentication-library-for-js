@@ -92,12 +92,15 @@ describe("/profile", () => {
         await screenshot.takeScreenshot(page, "Home page loaded");
 
         // Navigate to /profile and expect popup to be opened without interaction
-        const newPopupWindowPromise = new Promise<puppeteer.Page>((resolve) =>
+        const newPopupWindowPromise = new Promise<puppeteer.Page|null>((resolve) =>
             page.once("popup", resolve)
         );
         await page.goto(`http://localhost:${port}/profile`);
         await screenshot.takeScreenshot(page, "Profile page loaded");
         const popupPage = await newPopupWindowPromise;
+        if (!popupPage) {
+            throw new Error('Popup window was not opened');
+          }
         const popupWindowClosed = new Promise<void>((resolve) =>
             popupPage.once("close", resolve)
         );
@@ -117,8 +120,8 @@ describe("/profile", () => {
             "xpath=//header//button"
         );
         await profileButton.click();
-        const logoutButtons = await page.$x(
-            "//li[contains(., 'Logout using')]"
+        const logoutButtons = await page.$$(
+            "xpath/.//li[contains(., 'Logout using')]"
         );
         expect(logoutButtons.length).toBe(2);
         await screenshot.takeScreenshot(page, "App signed in");
@@ -143,11 +146,14 @@ describe("/profile", () => {
         const loginPopupButton = await page.waitForSelector(
             "xpath=//li[contains(., 'Sign in using Popup')]"
         );
-        const newPopupWindowPromise = new Promise<puppeteer.Page>((resolve) =>
+        const newPopupWindowPromise = new Promise<puppeteer.Page|null>((resolve) =>
             page.once("popup", resolve)
         );
         await loginPopupButton.click();
         const popupPage = await newPopupWindowPromise;
+        if (!popupPage) {
+            throw new Error('Popup window was not opened');
+          }
         const popupWindowClosed = new Promise<void>((resolve) =>
             popupPage.once("close", resolve)
         );
@@ -165,8 +171,8 @@ describe("/profile", () => {
             "xpath=//header//button"
         );
         await profileButton.click();
-        const logoutButtons = await page.$x(
-            "//li[contains(., 'Logout using')]"
+        const logoutButtons = await page.$$(
+            "xpath/.//li[contains(., 'Logout using')]"
         );
         expect(logoutButtons.length).toBe(2);
         await screenshot.takeScreenshot(page, "App signed in");
@@ -190,12 +196,15 @@ describe("/profile", () => {
         await screenshot.takeScreenshot(page, "Home page loaded");
 
         // Navigate to /profile and expect popup to be opened without interaction
-        const newPopupWindowPromise = new Promise<puppeteer.Page>((resolve) =>
+        const newPopupWindowPromise = new Promise<puppeteer.Page|null>((resolve) =>
             page.once("popup", resolve)
         );
         await page.goto(`http://localhost:${port}/profile`);
         await screenshot.takeScreenshot(page, "Profile page loaded");
         const popupPage = await newPopupWindowPromise;
+        if (!popupPage) {
+            throw new Error('Popup window was not opened');
+          }
         const popupWindowClosed = new Promise<void>((resolve) =>
             popupPage.once("close", resolve)
         );

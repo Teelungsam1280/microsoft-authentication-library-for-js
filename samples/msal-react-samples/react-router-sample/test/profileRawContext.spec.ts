@@ -92,12 +92,15 @@ describe("/profileRawContext", () => {
         await screenshot.takeScreenshot(page, "Home page loaded");
 
         // Navigate to /profile and expect popup to be opened without interaction
-        const newPopupWindowPromise = new Promise<puppeteer.Page>((resolve) =>
+        const newPopupWindowPromise = new Promise<puppeteer.Page|null>((resolve) =>
             page.once("popup", resolve)
         );
         await page.goto(`http://localhost:${port}/profileRawContext`);
         await screenshot.takeScreenshot(page, "Profile page loaded");
         const popupPage = await newPopupWindowPromise;
+        if (!popupPage) {
+            throw new Error('Popup window was not opened');
+          }
         const popupWindowClosed = new Promise<void>((resolve) =>
             popupPage.once("close", resolve)
         );

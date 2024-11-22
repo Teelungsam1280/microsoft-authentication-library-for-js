@@ -108,8 +108,8 @@ describe('/ (Home Page)', () => {
       await logoutButton.click();
     }
     await page.waitForSelector("xpath/.//button[contains(., 'Logout using')]");
-    const logoutButtons = await page.$x(
-      "//button[contains(., 'Logout using')]"
+    const logoutButtons = await page.$$(
+      "xpath/.//button[contains(., 'Logout using')]"
     );
     expect(logoutButtons.length).toBe(2);
     if (logoutButton) {
@@ -149,13 +149,16 @@ describe('/ (Home Page)', () => {
     const loginPopupButton = await page.waitForSelector(
       "xpath=//button[contains(., 'Login using Popup')]"
     );
-    const newPopupWindowPromise = new Promise<puppeteer.Page>((resolve) =>
+    const newPopupWindowPromise = new Promise<puppeteer.Page|null>((resolve) =>
       page.once('popup', resolve)
     );
     if (loginPopupButton) {
       await loginPopupButton.click();
     }
     const popupPage = await newPopupWindowPromise;
+    if (!popupPage) {
+      throw new Error('Popup window was not opened');
+    }
     const popupWindowClosed = new Promise<void>((resolve) =>
       popupPage.once('close', resolve)
     );
@@ -176,8 +179,8 @@ describe('/ (Home Page)', () => {
     if (logoutButton) {
       await logoutButton.click();
     }
-    const logoutButtons = await page.$x(
-      "//button[contains(., 'Logout using')]"
+    const logoutButtons = await page.$$(
+      "xpath/.//button[contains(., 'Logout using')]"
     );
     expect(logoutButtons.length).toBe(2);
     if (logoutButton) {
