@@ -10,12 +10,12 @@ import {
     ResetPasswordSubmitCodeResult,
     ResetPasswordSubmitPasswordResult,
 } from "../result/ResetPasswordResult.js";
-import { AuthFlowStateBase } from "./AuthFlowStateBase.js";
+import { AuthFlowStateHandlerBase } from "./AuthFlowStateHandlerBase.js";
 
 /*
- * Base state for reset password operation.
+ * Base state handler for reset password operation.
  */
-abstract class ResetPasswordState extends AuthFlowStateBase {
+abstract class ResetPasswordStateHandler extends AuthFlowStateHandlerBase {
     /*
      * Creates a new state for reset password operation.
      * @param correlationId - The correlationId for the request.
@@ -42,15 +42,15 @@ abstract class ResetPasswordState extends AuthFlowStateBase {
 }
 
 /*
- * Reset password state that requires a code.
+ * Reset password handler for the state of code required.
  */
-export class ResetPasswordCodeRequiredState extends ResetPasswordState {
+export class ResetPasswordCodeRequiredStateHandler extends ResetPasswordStateHandler {
     /*
      * Submits a code for reset password.
      * @param code - The code to submit.
      * @returns The result of the operation.
      */
-    submitCode(code: string): Promise<ResetPasswordSubmitCodeResult> {
+    async submitCode(code: string): Promise<ResetPasswordSubmitCodeResult> {
         if (!code) {
             return Promise.resolve(
                 ResetPasswordSubmitCodeResult.createWithError(
@@ -66,21 +66,21 @@ export class ResetPasswordCodeRequiredState extends ResetPasswordState {
      * Resends a code for reset password.
      * @returns The result of the operation.
      */
-    resendCode(): Promise<ResetPasswordResendCodeResult> {
+    async resendCode(): Promise<ResetPasswordResendCodeResult> {
         throw new Error("Method not implemented.");
     }
 }
 
 /*
- * Reset password state that requires a password.
+ * Reset password handler for the state of password required.
  */
-export class ResetPasswordPasswordRequiredState extends ResetPasswordState {
+export class ResetPasswordPasswordRequiredStateHandler extends ResetPasswordStateHandler {
     /*
      * Submits a password for reset password.
      * @param password - The password to submit.
      * @returns The result of the operation.
      */
-    sumbmitPassword(
+    async sumbmitPassword(
         password: string
     ): Promise<ResetPasswordSubmitPasswordResult> {
         if (!password) {

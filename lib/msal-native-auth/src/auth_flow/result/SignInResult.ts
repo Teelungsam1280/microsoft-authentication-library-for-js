@@ -4,46 +4,110 @@
  */
 
 import {
-    SignInCodeRequiredState,
-    SignInPasswordRequiredState,
-} from "../state/SignInState.js";
+    SignInCodeRequiredStateHandler,
+    SignInPasswordRequiredStateHandler,
+} from "../state_handler/SignInStateHandler.js";
 import { AccountInfo } from "../data/AccountInfo.js";
 import { ResultBase } from "./ResultBase.js";
+import { SignInState } from "./AuthFlowState.js";
 
 /*
  * Result of a sign-in operation.
  */
 export class SignInResult extends ResultBase<
+    SignInState,
     AccountInfo,
-    SignInCodeRequiredState | SignInPasswordRequiredState
-> {}
+    SignInCodeRequiredStateHandler | SignInPasswordRequiredStateHandler
+> {
+    constructor(
+        resultData?: AccountInfo,
+        stateHandler?:
+            | SignInCodeRequiredStateHandler
+            | SignInPasswordRequiredStateHandler
+    ) {
+        super(resultData, stateHandler);
 
-/*
- * Result of a sign-in operation that requires a code.
- */
-export class SignInSubmitCodeResult extends ResultBase<AccountInfo> {
-    constructor(resultData?: AccountInfo) {
-        super(resultData);
+        if (this.stateHandler instanceof SignInCodeRequiredStateHandler) {
+            this._state = SignInState.CodeRequired;
+        } else if (
+            this.stateHandler instanceof SignInPasswordRequiredStateHandler
+        ) {
+            this._state = SignInState.PasswordRequired;
+        }
+    }
+
+    get state(): SignInState {
+        if (this.error) {
+            return SignInState.Failed;
+        }
+
+        if (this._state) {
+            return this._state;
+        }
+
+        if (this.data) {
+            return SignInState.Completed;
+        }
+
+        return SignInState.Unknown;
     }
 }
 
 /*
- * Result of a sign-in operation that requires a password.
+ * Result of a sign-in submit credential operation.
  */
-export class SignInSubmitPasswordResult extends ResultBase<AccountInfo> {
+abstract class SignInSubmitCredentialResult extends ResultBase<
+    SignInState,
+    AccountInfo
+> {
     constructor(resultData?: AccountInfo) {
         super(resultData);
+    }
+
+    get state(): SignInState {
+        if (this.error) {
+            return SignInState.Failed;
+        }
+
+        if (this.data) {
+            return SignInState.Completed;
+        }
+
+        return SignInState.Unknown;
     }
 }
 
 /*
- * Result of resending code in a sign-in operation.
+ * Result of a sign-in submit code operation.
+ */
+export class SignInSubmitCodeResult extends SignInSubmitCredentialResult {}
+
+/*
+ * Result of a sign-in submit password operation.
+ */
+export class SignInSubmitPasswordResult extends SignInSubmitCredentialResult {}
+
+/*
+ * Result of resending code sign-in operation.
  */
 export class SignInResendCodeResult extends ResultBase<
+    SignInState,
     void,
-    SignInCodeRequiredState
+    SignInCodeRequiredStateHandler
 > {
-    constructor(nextStateHandler?: SignInCodeRequiredState) {
-        super(undefined, nextStateHandler);
+    constructor(stateHandler?: SignInCodeRequiredStateHandler) {
+        super(undefined, stateHandler);
+    }
+
+    get state(): SignInState {
+        if (this.error) {
+            return SignInState.Failed;
+        }
+
+        if (this.stateHandler) {
+            return SignInState.CodeRequired;
+        }
+
+        return SignInState.Unknown;
     }
 }

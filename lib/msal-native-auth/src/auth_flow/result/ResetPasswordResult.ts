@@ -4,41 +4,85 @@
  */
 
 import {
-    ResetPasswordCodeRequiredState,
-    ResetPasswordPasswordRequiredState,
-} from "../state/ResetPasswordState.js";
+    ResetPasswordCodeRequiredStateHandler,
+    ResetPasswordPasswordRequiredStateHandler,
+} from "../state_handler/ResetPasswordStateHandler.js";
 import { ResultBase } from "./ResultBase.js";
-import { SignInContinuationState } from "../state/SignInState.js";
+import { SignInContinuationStateHandler } from "../state_handler/SignInStateHandler.js";
+import { ResetPasswordState } from "./AuthFlowState.js";
 
 /*
  * Result of a reset password operation.
  */
 export class ResetPasswordStartResult extends ResultBase<
+    ResetPasswordState,
     void,
-    ResetPasswordCodeRequiredState
-> {}
+    ResetPasswordCodeRequiredStateHandler
+> {
+    constructor(stateHandler?: ResetPasswordCodeRequiredStateHandler) {
+        super(undefined, stateHandler);
+    }
+
+    get state(): ResetPasswordState {
+        if (this.error) {
+            return ResetPasswordState.Failed;
+        }
+
+        if (this.stateHandler) {
+            return ResetPasswordState.CodeRequired;
+        }
+
+        return ResetPasswordState.Unknown;
+    }
+}
 
 /*
  * Result of a reset password operation that requires a code.
  */
 export class ResetPasswordSubmitCodeResult extends ResultBase<
+    ResetPasswordState,
     void,
-    ResetPasswordPasswordRequiredState
-> {}
+    ResetPasswordPasswordRequiredStateHandler
+> {
+    constructor(stateHandler?: ResetPasswordPasswordRequiredStateHandler) {
+        super(undefined, stateHandler);
+    }
+
+    get state(): ResetPasswordState {
+        if (this.error) {
+            return ResetPasswordState.Failed;
+        }
+
+        if (this.stateHandler) {
+            return ResetPasswordState.PasswordRequired;
+        }
+
+        return ResetPasswordState.Unknown;
+    }
+}
 
 /*
  * Result of a reset password operation that requires a password.
  */
 export class ResetPasswordSubmitPasswordResult extends ResultBase<
+    ResetPasswordState,
     void,
-    SignInContinuationState
+    SignInContinuationStateHandler
 > {
-    /*
-     * Checks if the flow is completed.
-     * @returns True if the flow is completed, false otherwise.
-     */
-    isFlowCompleted(): boolean {
-        return true;
+    constructor(stateHandler?: SignInContinuationStateHandler) {
+        super(undefined, stateHandler);
+    }
+
+    get state(): ResetPasswordState {
+        if (this.error) {
+            return ResetPasswordState.Failed;
+        }
+
+        if (this.stateHandler) {
+            return ResetPasswordState.Completed;
+        }
+
+        return ResetPasswordState.Unknown;
     }
 }
 
@@ -46,6 +90,23 @@ export class ResetPasswordSubmitPasswordResult extends ResultBase<
  * Result of resending code in a reset password operation.
  */
 export class ResetPasswordResendCodeResult extends ResultBase<
+    ResetPasswordState,
     void,
-    ResetPasswordCodeRequiredState
-> {}
+    ResetPasswordCodeRequiredStateHandler
+> {
+    constructor(stateHandler?: ResetPasswordCodeRequiredStateHandler) {
+        super(undefined, stateHandler);
+    }
+
+    get state(): ResetPasswordState {
+        if (this.error) {
+            return ResetPasswordState.Failed;
+        }
+
+        if (this.stateHandler) {
+            return ResetPasswordState.CodeRequired;
+        }
+
+        return ResetPasswordState.Unknown;
+    }
+}

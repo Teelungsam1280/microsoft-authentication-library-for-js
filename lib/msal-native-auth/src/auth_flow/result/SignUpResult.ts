@@ -4,29 +4,61 @@
  */
 
 import {
-    SignUpAttributesRequiredState,
-    SignUpCodeRequiredState,
-    SignUpPasswordRequiredState,
-} from "../state/SignUpState.js";
+    SignUpAttributesRequiredStateHandler,
+    SignUpCodeRequiredStateHandler,
+    SignUpPasswordRequiredStateHandler,
+} from "../state_handler/SignUpStateHandler.js";
 import { ResultBase } from "./ResultBase.js";
-import { SignInContinuationState } from "../state/SignInState.js";
+import { SignInContinuationStateHandler } from "../state_handler/SignInStateHandler.js";
+import { SignUpState } from "./AuthFlowState.js";
 
 /*
  * Result of a sign-up operation.
  */
 export class SignUpResult extends ResultBase<
+    SignUpState,
     void,
-    | SignUpCodeRequiredState
-    | SignUpPasswordRequiredState
-    | SignUpAttributesRequiredState
-    | SignInContinuationState
+    | SignUpCodeRequiredStateHandler
+    | SignUpPasswordRequiredStateHandler
+    | SignUpAttributesRequiredStateHandler
+    | SignInContinuationStateHandler
 > {
-    /*
-     * Checks if the flow is completed.
-     * @returns True if the flow is completed, false otherwise.
-     */
-    isFlowCompleted(): boolean {
-        return this.state instanceof SignInContinuationState;
+    constructor(
+        stateHandler?:
+            | SignUpCodeRequiredStateHandler
+            | SignUpPasswordRequiredStateHandler
+            | SignUpAttributesRequiredStateHandler
+            | SignInContinuationStateHandler
+    ) {
+        super(undefined, stateHandler);
+
+        if (this.stateHandler instanceof SignUpCodeRequiredStateHandler) {
+            this._state = SignUpState.CodeRequired;
+        } else if (
+            this.stateHandler instanceof SignUpPasswordRequiredStateHandler
+        ) {
+            this._state = SignUpState.PasswordRequired;
+        } else if (
+            this.stateHandler instanceof SignUpAttributesRequiredStateHandler
+        ) {
+            this._state = SignUpState.AttributesRequired;
+        } else if (
+            this.stateHandler instanceof SignInContinuationStateHandler
+        ) {
+            this._state = SignUpState.Completed;
+        }
+    }
+
+    get state(): SignUpState {
+        if (this.error) {
+            return SignUpState.Failed;
+        }
+
+        if (this._state) {
+            return this._state;
+        }
+
+        return SignUpState.Unknown;
     }
 }
 
@@ -49,6 +81,23 @@ export class SignUpSubmitAttributesResult extends SignUpResult {}
  * Result of resending code in a sign-up operation.
  */
 export class SignUpResendCodeResult extends ResultBase<
+    SignUpState,
     void,
-    SignUpCodeRequiredState
-> {}
+    SignUpCodeRequiredStateHandler
+> {
+    constructor(stateHandler?: SignUpCodeRequiredStateHandler) {
+        super(undefined, stateHandler);
+    }
+
+    get state(): SignUpState {
+        if (this.error) {
+            return SignUpState.Failed;
+        }
+
+        if (this.stateHandler) {
+            return SignUpState.CodeRequired;
+        }
+
+        return SignUpState.Unknown;
+    }
+}

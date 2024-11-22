@@ -57,13 +57,27 @@ async function handleSignIn(event) {
 
     switch (result.state) {
         case SignInState.Completed:
+            // read the account info from result by result.data and use it to get account data, tokens, and sign out.
             accountInfo = result.data;
             const accessToken = await accountInfo.getAccessToken();
             fetchProfile(accessToken);
+            break;
         case SignInState.CodeRequired:
             navigateToCodeEntryView(result.stateHandler);
+            break;
         case SignInState.PasswordRequired:
             navigateToPasswordEntryView(result.stateHandler);
+            break;
+        case SignInState.Failed:
+            // check the error type by calling result.error and handle error
+            if (result.error instanceof UserNotFoundError) {
+                // Handle user not found error
+            } else {
+                // Handle unexpected error
+            }
+            break;
+        default:
+            throw new Error("Invalid sign in state");
     }
 }
 
@@ -73,14 +87,16 @@ async function submitCode(handler: SignInCodeRequiredStateHandler) {
 
     const result = handler.submitCode(code);
 
-    // Handling the error if the action is failed
-    if (!result.isSuccess) {
-        return;
+    switch (result.state) {
+        case SignInState.Completed:
+            // read the account info from result by result.data and use it to get account data, tokens, and sign out.
+            break;
+        case SignInState.Failed:
+            // check the error type by calling result.error and handle error
+            break;
+        default:
+            throw new Error("Invalid sign in state");
     }
-
-    accountInfo = result.data;
-    const accessToken = await accountInfo.getAccessToken();
-    fetchProfile(accessToken);
 }
 
 // In the Password Entry UI
@@ -89,14 +105,16 @@ async function submitPassword(handler: SignInPasswordRequiredStateHandler) {
 
     const result = handler.submitPassword(password);
 
-    // Handling the error if the action is failed
-    if (!result.isSuccess) {
-        return;
+    switch (result.state) {
+        case SignInState.Completed:
+            // read the account info from result by result.data and use it to get account data, tokens, and sign out.
+            break;
+        case SignInState.Failed:
+            // check the error type by calling result.error and handle error
+            break;
+        default:
+            throw new Error("Invalid sign in state");
     }
-
-    accountInfo = result.data;
-    const accessToken = await accountInfo.getAccessToken();
-    fetchProfile(accessToken);
 }
 ```
 

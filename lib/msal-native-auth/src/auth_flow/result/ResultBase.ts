@@ -5,17 +5,23 @@
 
 import { NativeAuthError } from "../../error/NativeAuthError.js";
 import { UnexpectedError } from "../../error/UnexpectedError.js";
-import { AuthFlowStateBase } from "../state/AuthFlowStateBase.js";
+import { AuthFlowStateHandlerBase } from "../state_handler/AuthFlowStateHandlerBase.js";
 
 /*
  * Base class for a result of an authentication operation.
  * @typeParam TState - The type of the result data.
- * @typeParam TState - The type of state.
+ * @typeParam TStateHandler - The type of state handler.
  */
 export abstract class ResultBase<
+    TState,
     TData = void,
-    TState extends AuthFlowStateBase | void = void
+    TStateHandler extends AuthFlowStateHandlerBase | void = void
 > {
+    /*
+     * The state of the authentication operation.
+     */
+    protected _state?: TState;
+
     /*
      *constructor for ResultBase
      * @param data - The result data.
@@ -23,12 +29,17 @@ export abstract class ResultBase<
      * @typeParam TData - The type of the result data.
      * @typeParam TState - The type of state.
      */
-    constructor(public data?: TData, public state?: TState) {}
+    constructor(public data?: TData, public stateHandler?: TStateHandler) {}
 
     /*
      * The error that occurred during the authentication operation.
      */
     error?: NativeAuthError;
+
+    /*
+     * Gets current state of the authentication operation.
+     */
+    abstract get state(): TState;
 
     /*
      * Creates a result with an error.
@@ -40,8 +51,9 @@ export abstract class ResultBase<
      */
     static createWithError<
         TData,
-        TState extends AuthFlowStateBase | void,
-        TActionResult extends ResultBase<TData, TState>
+        TStateHandler extends AuthFlowStateHandlerBase | void,
+        TState,
+        TActionResult extends ResultBase<TState, TData, TStateHandler>
     >(this: new () => TActionResult, error: unknown): TActionResult {
         let nativeAuthError: NativeAuthError;
 
@@ -54,21 +66,5 @@ export abstract class ResultBase<
         const errorResult = new this();
         errorResult.error = nativeAuthError;
         return errorResult;
-    }
-
-    /*
-     * Checks if the result is successful.
-     * @returns True if the result is successful, false otherwise.
-     */
-    isSuccess(): boolean {
-        return !this.error;
-    }
-
-    /*
-     * Checks if the flow is completed.
-     * @returns True if the flow is completed, false otherwise.
-     */
-    isFlowCompleted(): boolean {
-        return !this.data;
     }
 }

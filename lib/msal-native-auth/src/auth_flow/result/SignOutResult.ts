@@ -3,17 +3,22 @@
  * Licensed under the MIT License.
  */
 
+import { SignOutState } from "./AuthFlowState.js";
 import { ResultBase } from "./ResultBase.js";
 
 /*
  * Result of a sign-out operation.
  */
-export class SignOutResult extends ResultBase<void, void> {
-    /*
-     * Checks if the flow is completed.
-     * @returns True if the flow is completed, false otherwise.
-     */
-    isFlowCompleted(): boolean {
-        return true;
+export class SignOutResult extends ResultBase<SignOutState, void, void> {
+    constructor() {
+        super(undefined, undefined);
+    }
+
+    get state(): SignOutState {
+        if (this.error) {
+            return SignOutState.Error;
+        }
+
+        return SignOutState.Completed;
     }
 }

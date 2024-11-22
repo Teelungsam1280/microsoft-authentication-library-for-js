@@ -4,17 +4,16 @@
  */
 
 import {
-    SignInCodeRequiredState,
-    SignInPasswordRequiredState,
-    UserNotFoundError,
+    SignInCodeRequiredStateHandler,
+    SignInPasswordRequiredStateHandler,
+    SignInState,
 } from "@azure/msal-native-auth";
-import { AccountInfo } from "@azure/msal-native-auth";
 import { SignInInputs } from "@azure/msal-native-auth";
 import { NativeAuthConfiguration } from "@azure/msal-native-auth";
 import { NativeAuthPublicClientApplication } from "@azure/msal-native-auth";
 
 // This sample demonstrates how to sign in a user using the MSAL Native Auth library.
-// Currently, this sample doesn't work and only is used to demonstrate the usage of the library.
+// Currently, this sample doesn't work and is only used to demonstrate the usage of the library.
 export async function signin(
     username: string,
     password?: string
@@ -28,120 +27,54 @@ export async function signin(
 
     const signInOptions: SignInInputs = {
         username: username,
-        password: password,
     };
 
     const result = await app.signIn(signInOptions);
 
-    if (!result.isSuccess) {
-        // check the errr type and handle error
-
-        if (result.error instanceof UserNotFoundError) {
-            // handle user not found error
-        } else {
-            // handle unexpected error
-        }
-
-        return;
-    }
-
-    // Check if the flow is completed
-    if (result.isFlowCompleted()) {
-        // Get the account info which can be used to get account data, tokens, and sign out.
-        const accountManager: AccountInfo = result.data as AccountInfo;
-
-        accountManager.getAccount();
-        accountManager.getIdToken();
-        await accountManager.getAccessToken();
-        await accountManager.signOut();
-
-        return;
-    }
-
-    // code required
-    if (result.state instanceof SignInCodeRequiredState) {
-        // collect code from customer.
-        const code = "test-code";
-
-        const submitCodeResult = await result.state.submitCode(code);
-
-        if (!submitCodeResult.isSuccess) {
-            // handle error
-
+    switch (result.state) {
+        case SignInState.Completed:
+            // read the account info from result by result.data and use it to get account data, tokens, and sign out.
             return;
-        }
+        case SignInState.CodeRequired:
+            // collect code from customer.
+            const code = "test-code";
 
-        // Get the account manager which can be used to get account information, tokens, and sign out.
-        const accountManager: AccountInfo =
-            submitCodeResult.data as AccountInfo;
+            const submitCodeResult = await (
+                result.stateHandler as SignInCodeRequiredStateHandler
+            ).submitCode(code);
 
-        accountManager.getAccount();
-        accountManager.getIdToken();
-        await accountManager.getAccessToken();
-        await accountManager.signOut();
+            switch (submitCodeResult.state) {
+                case SignInState.Completed:
+                    // read the account info from result by submitCodeResult.data and use it to get account data, tokens, and sign out.
+                    return;
+                case SignInState.Failed:
+                    // check the error type by calling result.error and handle error
+                    break;
+                default:
+                    throw new Error("Invalid sign in state");
+            }
+        case SignInState.PasswordRequired:
+            // collect password from customer.
+            const password = "test-pwd";
 
-        return;
-    }
+            const submitPasswordResult = await (
+                result.stateHandler as SignInPasswordRequiredStateHandler
+            ).sumbmitPassword(password);
 
-    // resend code and submit code
-    if (result.state instanceof SignInCodeRequiredState) {
-        // resend code
-        const resendCodeResult = await result.state.resendCode();
-
-        if (!resendCodeResult.isSuccess) {
-            // handle error
-
+            switch (submitPasswordResult.state) {
+                case SignInState.Completed:
+                    // read the account info from result by submitPasswordResult.data and use it to get account data, tokens, and sign out.
+                    return;
+                case SignInState.Failed:
+                    // check the error type by calling result.error and handle error
+                    break;
+                default:
+                    throw new Error("Invalid sign in state");
+            }
+        case SignInState.Failed:
+            // check the error type by calling result.error and handle error
             return;
-        }
-
-        // collect code from customer.
-        const code = "test-code";
-
-        const submitCodeResult = await (
-            resendCodeResult.state as SignInCodeRequiredState
-        ).submitCode(code);
-
-        if (!submitCodeResult.isSuccess) {
-            // handle error
-
-            return;
-        }
-
-        // Get the account manager which can be used to get account information, tokens, and sign out.
-        const accountManager: AccountInfo =
-            submitCodeResult.data as AccountInfo;
-
-        accountManager.getAccount();
-        accountManager.getIdToken();
-        await accountManager.getAccessToken();
-        await accountManager.signOut();
-
-        return;
-    }
-
-    // password required
-    if (result.state instanceof SignInPasswordRequiredState) {
-        // collect password from customer.
-        const pwd = "test-password";
-        const submitPasswordResult = await result.state.sumbmitPassword(pwd);
-
-        if (!submitPasswordResult.isSuccess) {
-            // handle error
-
-            return;
-        }
-
-        // Get the account manager which can be used to get account information, tokens, and sign out.
-        const accountManager: AccountInfo =
-            submitPasswordResult.data as AccountInfo;
-
-        accountManager.getAccount();
-        accountManager.getIdToken();
-        await accountManager.getAccessToken();
-        await accountManager.signOut();
-
-        return;
+        default:
+            throw new Error("Invalid sign in state");
     }
 }
-
-console.log("Starting sign in sample...");

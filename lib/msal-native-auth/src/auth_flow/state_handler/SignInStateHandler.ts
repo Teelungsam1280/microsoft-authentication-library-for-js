@@ -14,14 +14,14 @@ import {
     SignInSubmitCodeResult,
     SignInSubmitPasswordResult,
 } from "../result/SignInResult.js";
-import { AuthFlowStateBase } from "./AuthFlowStateBase.js";
+import { AuthFlowStateHandlerBase } from "./AuthFlowStateHandlerBase.js";
 
 /*
  * Base state for sign-in flow.
  */
-abstract class SignInState extends AuthFlowStateBase {
+abstract class SignInStateHandler extends AuthFlowStateHandlerBase {
     /*
-     * Constructor for SignInState.
+     * Constructor for SignInStateHandler.
      * @param signInClient - The client to use for sign-in operations.
      * @param correlationId - The correlation ID for the request.
      * @param continuationToken - The continuation token for the sign-in operation.
@@ -52,9 +52,9 @@ abstract class SignInState extends AuthFlowStateBase {
 }
 
 /*
- * Sign-in state which requires a code.
+ * Sign-in handler for the state which requires a code.
  */
-export class SignInCodeRequiredState extends SignInState {
+export class SignInCodeRequiredStateHandler extends SignInStateHandler {
     /*
      * Submits a code for sign-in.
      * @param code - The code to submit.
@@ -107,9 +107,9 @@ export class SignInCodeRequiredState extends SignInState {
 }
 
 /*
- * Sign-in state that requires a password.
+ * Sign-in handler for the state which requires a password.
  */
-export class SignInPasswordRequiredState extends SignInState {
+export class SignInPasswordRequiredStateHandler extends SignInStateHandler {
     /*
      * Submits a password for sign-in.
      * @param password - The password to submit.
@@ -131,11 +131,11 @@ export class SignInPasswordRequiredState extends SignInState {
 }
 
 /*
- * Sign-in continuation state.
+ * Sign-in continuation state handler.
  */
-export class SignInContinuationState extends AuthFlowStateBase {
+export class SignInContinuationStateHandler extends AuthFlowStateHandlerBase {
     /*
-     * Constructor for SignInContinuationState.
+     * Constructor for SignInContinuationStateHandler.
      * @param correlationId - The correlation ID for the request.
      * @param continuationToken - The continuation token for the sign-in operation.
      * @param config - The configuration for the client.
@@ -167,7 +167,7 @@ export class SignInContinuationState extends AuthFlowStateBase {
      * @param scopes - The scopes to request during sign-in.
      * @returns The result of the operation.
      */
-    signIn(scopes?: Array<string>): Promise<SignInResult> {
+    async signIn(scopes?: Array<string>): Promise<SignInResult> {
         throw new Error(`Method not implemented with parameter: ${scopes}`);
     }
 }

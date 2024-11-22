@@ -5,9 +5,9 @@
 
 import { FetchClient, StandardController } from "@azure/msal-browser";
 import {
-    SignInCodeRequiredState,
-    SignInPasswordRequiredState,
-} from "../auth_flow/state/SignInState.js";
+    SignInCodeRequiredStateHandler,
+    SignInPasswordRequiredStateHandler,
+} from "../auth_flow/state_handler/SignInStateHandler.js";
 import { AccountInfo } from "../auth_flow/data/AccountInfo.js";
 import { GetAccountResult } from "../auth_flow/result/GetAccountResult.js";
 import { ResetPasswordStartResult } from "../auth_flow/result/ResetPasswordResult.js";
@@ -124,7 +124,7 @@ export class NativeAuthStandardController
                 if (!signInOptions.password) {
                     return new SignInResult(
                         undefined,
-                        new SignInPasswordRequiredState(
+                        new SignInPasswordRequiredStateHandler(
                             this.signInClient,
                             correlationId,
                             startResult.continuationToken,
@@ -161,7 +161,7 @@ export class NativeAuthStandardController
                 // require code
                 return new SignInResult(
                     undefined,
-                    new SignInCodeRequiredState(
+                    new SignInCodeRequiredStateHandler(
                         this.signInClient,
                         correlationId,
                         startResult.continuationToken,

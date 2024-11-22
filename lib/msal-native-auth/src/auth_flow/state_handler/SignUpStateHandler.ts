@@ -12,14 +12,14 @@ import {
     SignUpSubmitCodeResult,
     SignUpSubmitPasswordResult,
 } from "../result/SignUpResult.js";
-import { AuthFlowStateBase } from "./AuthFlowStateBase.js";
+import { AuthFlowStateHandlerBase } from "./AuthFlowStateHandlerBase.js";
 
 /*
- * Base state for sign-up flow.
+ * Base state handler for sign-up flow.
  */
-abstract class SignUpState extends AuthFlowStateBase {
+abstract class SignUpStateHandler extends AuthFlowStateHandlerBase {
     /*
-     * Creates a new SignUpState.
+     * Creates a new SignUpStateHandler.
      * @param correlationId - The correlation ID for the request.
      * @param continuationToken - The continuation token for the request.
      * @param config - The configuration for the request.
@@ -44,15 +44,15 @@ abstract class SignUpState extends AuthFlowStateBase {
 }
 
 /*
- * Sign-up state that requires a code.
+ * Sign-up handler used for the state of code required.
  */
-export class SignUpCodeRequiredState extends SignUpState {
+export class SignUpCodeRequiredStateHandler extends SignUpStateHandler {
     /*
      * Submits a code for sign-up.
      * @param code - The code to submit.
      * @returns The result of the operation.
      */
-    submitCode(code: string): Promise<SignUpSubmitCodeResult> {
+    async submitCode(code: string): Promise<SignUpSubmitCodeResult> {
         if (!code) {
             return Promise.resolve(
                 SignUpSubmitCodeResult.createWithError(
@@ -68,21 +68,23 @@ export class SignUpCodeRequiredState extends SignUpState {
      * Resends a code for sign-up.
      * @returns The result of the operation.
      */
-    resendCode(): Promise<SignUpResendCodeResult> {
+    async resendCode(): Promise<SignUpResendCodeResult> {
         throw new Error("Method not implemented.");
     }
 }
 
 /*
- * Sign-up state that requires a password.
+ * Sign-up handler used for the state of password required.
  */
-export class SignUpPasswordRequiredState extends SignUpState {
+export class SignUpPasswordRequiredStateHandler extends SignUpStateHandler {
     /*
      * Submits a password for sign-up.
      * @param password - The password to submit.
      * @returns The result of the operation.
      */
-    sumbmitPassword(password: string): Promise<SignUpSubmitPasswordResult> {
+    async sumbmitPassword(
+        password: string
+    ): Promise<SignUpSubmitPasswordResult> {
         if (!password) {
             return Promise.resolve(
                 SignUpSubmitPasswordResult.createWithError(
@@ -96,15 +98,15 @@ export class SignUpPasswordRequiredState extends SignUpState {
 }
 
 /*
- * Sign-up state that requires attributes.
+ * Sign-up handler used for the state of attributes required.
  */
-export class SignUpAttributesRequiredState extends SignUpState {
+export class SignUpAttributesRequiredStateHandler extends SignUpStateHandler {
     /*
      * Submits attributes for sign-up.
      * @param attributes - The attributes to submit.
      * @returns The result of the operation.
      */
-    sumbmitAttributes(
+    async sumbmitAttributes(
         attributes: UserAccountAttributes
     ): Promise<SignUpSubmitAttributesResult> {
         if (!attributes) {
