@@ -72,7 +72,7 @@ describe("/profile", () => {
     });
 
     beforeEach(async () => {
-        context = await browser.createIncognitoBrowserContext();
+        context = await browser.createBrowserContext();
         page = await context.newPage();
         page.setDefaultTimeout(5000);
         BrowserCache = new BrowserCacheUtils(page, "localStorage");
@@ -106,13 +106,13 @@ describe("/profile", () => {
         await popupWindowClosed;
 
         // Wait for Graph data to display
-        await page.waitForXPath("//div/ul/li[contains(., 'Name')]", {
+        await page.waitForSelector("xpath/.//div/ul/li[contains(., 'Name')]", {
             timeout: 5000,
         });
         await screenshot.takeScreenshot(page, "Graph data acquired");
 
         // Verify UI now displays logged in content
-        await page.waitForXPath("//header[contains(., 'Welcome,')]");
+        await page.waitForSelector("xpath/.//header[contains(., 'Welcome,')]");
         const profileButton = await page.waitForSelector(
             "xpath=//header//button"
         );
@@ -154,13 +154,13 @@ describe("/profile", () => {
 
         await enterCredentials(popupPage, screenshot, username, accountPwd);
         await popupWindowClosed;
-        await page.waitForXPath("//header[contains(., 'Welcome,')]", {
+        await page.waitForSelector("xpath/.//header[contains(., 'Welcome,')]", {
             timeout: 3000,
         });
         await screenshot.takeScreenshot(page, "Popup closed");
 
         // Verify UI now displays logged in content
-        await page.waitForXPath("//header[contains(., 'Welcome,')]");
+        await page.waitForSelector("xpath/.//header[contains(., 'Welcome,')]");
         const profileButton = await page.waitForSelector(
             "xpath=//header//button"
         );
@@ -174,7 +174,7 @@ describe("/profile", () => {
         // Go to protected page
         await page.goto(`http://localhost:${port}/profile`);
         // Wait for Graph data to display
-        await page.waitForXPath("//div/ul/li[contains(., 'Name')]", {
+        await page.waitForSelector("xpath/.//div/ul/li[contains(., 'Name')]", {
             timeout: 5000,
         });
         await screenshot.takeScreenshot(page, "Graph data acquired");
@@ -203,16 +203,16 @@ describe("/profile", () => {
         // Wait until the popup has navigated to login page
         await popupPage.waitForNavigation({ waitUntil: "networkidle0" });
 
-        await page.waitForXPath(
-            "//h6[contains(., 'Authentication in progress...')]"
+        await page.waitForSelector(
+            "xpath/.//h6[contains(., 'Authentication in progress...')]"
         );
         await screenshot.takeScreenshot(page, "Loading component rendered");
 
         await popupPage.close();
         await popupWindowClosed;
 
-        await page.waitForXPath(
-            "//h6[contains(., 'An Error Occurred: user_cancelled')]"
+        await page.waitForSelector(
+            "xpath/.//h6[contains(., 'An Error Occurred: user_cancelled')]"
         );
         await screenshot.takeScreenshot(page, "Error component rendered");
     });
